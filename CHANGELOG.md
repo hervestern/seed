@@ -1,6 +1,7 @@
 # Version 2.2.0 (2016-01-28)
 
 * [new] Applications can run in a Servlet 3+ environment without web.xml file
+* [new] Allow configuration of ServletContext by implementing `ServletContextConfigurer`
 
 # Version 2.1.0 (2015-11-26)
 
