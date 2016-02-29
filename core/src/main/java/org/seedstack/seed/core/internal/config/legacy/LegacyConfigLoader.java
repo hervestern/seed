@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.core.internal.application;
+package org.seedstack.seed.core.internal.config.legacy;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
@@ -34,10 +34,10 @@ import java.util.Set;
  *
  * @author pierre.thirouin@ext.mpsa.com (Pierre Thirouin)
  */
-public class SeedConfigLoader {
+public class LegacyConfigLoader {
     private static final String SEED_BOOTSTRAP_PROPS_PATH = "META-INF/configuration/seed.props";
     private static final String SEED_BOOTSTRAP_PROPERTIES_PATH = "META-INF/configuration/seed.properties";
-    private static final Logger LOGGER = LoggerFactory.getLogger(SeedConfigLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LegacyConfigLoader.class);
 
     /**
      * Build the configuration needed to bootstrap a Seed application.
@@ -98,7 +98,7 @@ public class SeedConfigLoader {
                     }
                 }
             } catch (IOException e) {
-                throw SeedException.wrap(e, ApplicationErrorCode.UNABLE_TO_LOAD_CONFIGURATION_RESOURCE).put("resource", configurationResource);
+                throw SeedException.wrap(e, LegacyConfigErrorCode.UNABLE_TO_LOAD_CONFIGURATION_RESOURCE).put("resource", configurationResource);
             }
         }
 

@@ -19,6 +19,8 @@ import io.nuun.kernel.core.AbstractPlugin;
 import org.kametic.specifications.Specification;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.core.internal.config.legacy.LegacyConfigPlugin;
+import org.seedstack.seed.core.spi.configuration.ConfigurationProvider;
 import org.seedstack.seed.it.ITBind;
 import org.seedstack.seed.it.ITInstall;
 import org.slf4j.Logger;
@@ -64,7 +66,7 @@ public class ITPlugin extends AbstractPlugin {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public InitState init(InitContext initContext) {
         String itClassName = initContext.kernelParam(IT_CLASS_NAME);
-        Map<String, String> defaultConfiguration = initContext.dependency(ApplicationPlugin.class).getDefaultConfiguration();
+        Map<String, String> defaultConfiguration = initContext.dependency(ConfigurationProvider.class).getDefaultConfiguration();
 
         // Automatically define a unique identifier for this test (can be overridden by explicit identifier in the configuration)
         defaultConfiguration.put("org.seedstack.seed.core.application-id", UUID.randomUUID().toString());
@@ -148,7 +150,7 @@ public class ITPlugin extends AbstractPlugin {
 
     @Override
     public Collection<Class<?>> dependentPlugins() {
-        return Lists.<Class<?>>newArrayList(ApplicationPlugin.class);
+        return Lists.<Class<?>>newArrayList(ConfigurationProvider.class);
     }
 
     private void deleteRecursively(final File file) throws IOException {

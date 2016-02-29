@@ -8,14 +8,13 @@
 /**
  *
  */
-package org.seedstack.seed.core.internal.application;
+package org.seedstack.seed.core.internal.config.legacy;
 
 import io.nuun.kernel.api.plugin.context.InitContext;
 import org.apache.commons.configuration.Configuration;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.Application;
 import org.seedstack.seed.core.internal.CorePlugin;
 import org.seedstack.seed.spi.configuration.ConfigurationLookup;
 
@@ -33,37 +32,37 @@ import static org.mockito.Mockito.when;
  *
  * @author redouane.loulou@ext.mpsa.com
  */
-public class ApplicationPluginTest {
+public class LegacyConfigPluginTest {
 
-    ApplicationPlugin pluginUnderTest;
+    LegacyConfigPlugin pluginUnderTest;
 
     /**
-     * @throws java.lang.Exception
+     * @throws Exception
      */
     @Before
     public void setUp() throws Exception {
-        pluginUnderTest = new ApplicationPlugin();
+        pluginUnderTest = new LegacyConfigPlugin();
     }
 
     @Test
     public void testBootstrapConfig() {
-        Configuration configuration = new SeedConfigLoader().buildBootstrapConfig();
+        Configuration configuration = new LegacyConfigLoader().buildBootstrapConfig();
 
         Assertions.assertThat(configuration).isNotNull();
-        Assertions.assertThat(configuration.getString(ApplicationPlugin.BASE_PACKAGES_KEY)).isEqualTo("some.other.pkg");
+        Assertions.assertThat(configuration.getString(LegacyConfigPlugin.BASE_PACKAGES_KEY)).isEqualTo("some.other.pkg");
         Assertions.assertThat(configuration.getString("test.key2")).isEqualTo("val2");
     }
 
     @Test
     public void package_root_should_valid() {
         String pluginPackageRoot = pluginUnderTest.pluginPackageRoot();
-        Assertions.assertThat(pluginPackageRoot).contains(ApplicationPlugin.CONFIGURATION_PACKAGE);
+        Assertions.assertThat(pluginPackageRoot).contains(LegacyConfigPlugin.CONFIGURATION_PACKAGE);
         Assertions.assertThat(pluginPackageRoot).contains("some.other.pkg");
     }
 
     @Test
     public void environment_variables_are_accessible_in_bootstrap_configuration() {
-        Configuration configuration = new SeedConfigLoader().buildBootstrapConfig();
+        Configuration configuration = new LegacyConfigLoader().buildBootstrapConfig();
 
         String javaHome = System.getenv().get("JAVA_HOME");
         if (javaHome == null) {
@@ -81,18 +80,18 @@ public class ApplicationPluginTest {
         mapFile.put(".*\\.props", propertiesFiles);
         InitContext initContext = mockInitContextForCore();
         pluginUnderTest.init(initContext);
-        Application application = pluginUnderTest.getApplication();
-        Assertions.assertThat(application.getConfiguration()).isNotNull();
-        Assertions.assertThat(pluginUnderTest.nativeUnitModule()).isInstanceOf(ApplicationModule.class);
+        Configuration configuration = pluginUnderTest.getConfiguration();
+        Assertions.assertThat(configuration).isNotNull();
+        Assertions.assertThat(pluginUnderTest.nativeUnitModule()).isInstanceOf(LegacyConfigModule.class);
     }
 
     @Test
     public void initTest2() {
         InitContext initContext = mockInitContextForCore();
         pluginUnderTest.init(initContext);
-        Application application = pluginUnderTest.getApplication();
-        Assertions.assertThat(application).isNotNull();
-        Assertions.assertThat(pluginUnderTest.nativeUnitModule()).isInstanceOf(ApplicationModule.class);
+        Configuration configuration = pluginUnderTest.getConfiguration();
+        Assertions.assertThat(configuration).isNotNull();
+        Assertions.assertThat(pluginUnderTest.nativeUnitModule()).isInstanceOf(LegacyConfigModule.class);
 
     }
 
@@ -108,11 +107,11 @@ public class ApplicationPluginTest {
 
         Collection<String> props = new ArrayList<String>();
         props.add("META-INF/configuration/org.seedstack.seed-test.props");
-        resources.put(ApplicationPlugin.PROPS_REGEX, props);
+        resources.put(LegacyConfigPlugin.PROPS_REGEX, props);
 
         Collection<String> properties = new ArrayList<String>();
         properties.add("META-INF/configuration/any.properties");
-        resources.put(ApplicationPlugin.PROPERTIES_REGEX, properties);
+        resources.put(LegacyConfigPlugin.PROPERTIES_REGEX, properties);
 
         when(initContext.mapResourcesByRegex()).thenReturn(resources);
         when(initContext.scannedClassesByAnnotationClass()).thenReturn(scannedClassesByAnnotationClass);

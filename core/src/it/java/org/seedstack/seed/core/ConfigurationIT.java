@@ -15,8 +15,8 @@ import org.junit.Test;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.Configuration;
 import org.seedstack.seed.Logging;
-import org.seedstack.seed.core.fixtures.SomeEnum;
 import org.seedstack.seed.core.fixtures.MyClass;
+import org.seedstack.seed.core.fixtures.SomeEnum;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
@@ -65,21 +65,6 @@ public class ConfigurationIT {
             Assertions.assertThat(holder.someEnum).isNotNull().isEqualTo(SomeEnum.FOO);
             Assertions.assertThat(holder.logger).isNotNull();
             Assertions.assertThat(holder.logger.getName()).isEqualTo(Holder.class.getName());
-        } finally {
-            teardown(kernel);
-        }
-    }
-
-    @Test
-    public void injector_graphing_is_working_correctly() throws Exception {
-        Kernel kernel = setup();
-
-        try {
-            Holder holder = getHolder(kernel);
-            String injectorGraph = holder.application.getInjectionGraph(null);
-
-            Assertions.assertThat(injectorGraph).isNotNull();
-            Assertions.assertThat(injectorGraph).isNotEmpty();
         } finally {
             teardown(kernel);
         }

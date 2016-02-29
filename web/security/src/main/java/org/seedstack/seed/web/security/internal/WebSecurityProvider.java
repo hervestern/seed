@@ -16,6 +16,7 @@ import jodd.props.Props;
 import org.apache.commons.configuration.Configuration;
 import org.apache.shiro.guice.web.ShiroWebModule;
 import org.seedstack.seed.core.internal.application.ApplicationPlugin;
+import org.seedstack.seed.core.internal.config.legacy.LegacyConfigPlugin;
 import org.seedstack.seed.security.internal.SecurityPlugin;
 import org.seedstack.seed.security.internal.SecurityProvider;
 import org.seedstack.seed.security.internal.SecurityGuiceConfigurer;
@@ -49,11 +50,12 @@ public class WebSecurityProvider implements SecurityProvider {
     @SuppressWarnings("unchecked")
     @Override
     public void init(InitContext initContext) {
+        LegacyConfigPlugin legacyConfigPlugin = initContext.dependency(LegacyConfigPlugin.class);
         ApplicationPlugin applicationPlugin = initContext.dependency(ApplicationPlugin.class);
 
-        props = applicationPlugin.getProps();
+        props = legacyConfigPlugin.getProps();
         applicationId = applicationPlugin.getApplication().getId();
-        securityConfiguration = applicationPlugin.getConfiguration().subset(SecurityPlugin.SECURITY_PREFIX);
+        securityConfiguration = legacyConfigPlugin.getConfiguration().subset(SecurityPlugin.SECURITY_PREFIX);
         for (Class<?> filterClass : initContext.scannedClassesByAnnotationClass().get(SecurityFilter.class)) {
             if (Filter.class.isAssignableFrom(filterClass)) {
                 scannedFilters.add((Class<? extends Filter>) filterClass);

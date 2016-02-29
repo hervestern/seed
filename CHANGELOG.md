@@ -1,3 +1,7 @@
+# Version 3.3.0 (2016-?-?)
+
+* [brk] `storage` configuration lookup has been removed.
+
 # Version 2.2.0 (2016-01-28)
 
 * [fix] Fix the `@Ignore` annotation which was not working anymore in version 2.1.0.
