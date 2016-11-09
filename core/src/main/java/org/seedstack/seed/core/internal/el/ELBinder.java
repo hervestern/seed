@@ -11,7 +11,7 @@ import com.google.inject.Binder;
 import com.google.inject.matcher.AbstractMatcher;
 import com.google.inject.matcher.Matcher;
 import com.google.inject.matcher.Matchers;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.core.internal.utils.SeedReflectionUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

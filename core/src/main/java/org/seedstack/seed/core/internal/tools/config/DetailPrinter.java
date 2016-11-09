@@ -9,7 +9,7 @@ package org.seedstack.seed.core.internal.tools.config;
 
 import com.google.common.base.Strings;
 import org.fusesource.jansi.Ansi;
-import org.seedstack.shed.text.TextUtils;
+import org.seedstack.seed.utils.TextUtils;
 
 import java.io.PrintStream;
 

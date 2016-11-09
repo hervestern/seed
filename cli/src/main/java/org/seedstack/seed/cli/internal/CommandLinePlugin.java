@@ -23,9 +23,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.ancestorImplements;
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsAbstract;
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsInterface;
+import static org.seedstack.seed.core.internal.utils.BaseClassSpecifications.ancestorImplements;
+import static org.seedstack.seed.core.internal.utils.BaseClassSpecifications.classIsAbstract;
+import static org.seedstack.seed.core.internal.utils.BaseClassSpecifications.classIsInterface;
 
 /**
  * This plugin enables to run {@link CommandLineHandler} through

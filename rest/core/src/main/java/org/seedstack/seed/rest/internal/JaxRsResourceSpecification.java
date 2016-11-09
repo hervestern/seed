@@ -8,12 +8,11 @@
 package org.seedstack.seed.rest.internal;
 
 import org.kametic.specifications.AbstractSpecification;
-import org.seedstack.seed.core.utils.BaseClassSpecifications;
 
 import javax.ws.rs.Path;
 
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.classAnnotatedWith;
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.classIsAbstract;
+import static org.seedstack.seed.core.internal.utils.BaseClassSpecifications.classAnnotatedWith;
+import static org.seedstack.seed.core.internal.utils.BaseClassSpecifications.classIsAbstract;
 
 /**
  * Matches non abstract classes annotated by {@link javax.ws.rs.Path} or containing methods annotated by {@code Path}.
@@ -34,6 +33,6 @@ public class JaxRsResourceSpecification extends AbstractSpecification<Class<?>> 
 
     @Override
     public boolean isSatisfiedBy(Class<?> candidate) {
-        return classAnnotatedWith(Path.class).and(BaseClassSpecifications.not(classIsAbstract())).isSatisfiedBy(candidate);
+        return classAnnotatedWith(Path.class).and((classIsAbstract().not())).isSatisfiedBy(candidate);
     }
 }

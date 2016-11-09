@@ -9,7 +9,7 @@ package org.seedstack.seed.security.internal.data;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.core.internal.utils.SeedReflectionUtils;
 import org.seedstack.seed.security.data.DataSecurityService;
 import org.seedstack.seed.security.data.Secured;
 
@@ -17,8 +17,8 @@ import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-import static org.seedstack.seed.core.utils.SeedReflectionUtils.isPresent;
-import static org.seedstack.seed.core.utils.SeedReflectionUtils.methodsFromAncestors;
+import static org.seedstack.seed.core.internal.utils.SeedReflectionUtils.isPresent;
+import static org.seedstack.seed.core.internal.utils.SeedReflectionUtils.methodsFromAncestors;
 
 /**
  * This interceptor will apply Data Security Service on the annotated parameters and/or on the return value.

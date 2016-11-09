@@ -19,7 +19,7 @@ import org.seedstack.seed.DataManager;
 import org.seedstack.seed.DataSet;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.core.internal.utils.SeedReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

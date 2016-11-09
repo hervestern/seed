@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed;
 
-import org.seedstack.shed.text.TextUtils;
+import org.seedstack.seed.utils.TextUtils;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -17,8 +17,6 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.seedstack.shed.text.TextUtils.replaceTokens;
 
 /**
  * This is the base class for all technical SeedStack exceptions. It provides additional information over traditional
@@ -256,19 +254,19 @@ public class SeedException extends RuntimeException {
                 // Find the fix at lowest depth
                 String fixTemplate = seedCause.getTemplate("fix");
                 if (fixTemplate != null) {
-                    fix = replaceTokens(fixTemplate, seedCause.getProperties());
+                    fix = TextUtils.replaceTokens(fixTemplate, seedCause.getProperties());
                 }
 
                 // Also get the url
                 String urlTemplate = seedCause.getTemplate("url");
                 if (urlTemplate != null) {
-                    url = replaceTokens(urlTemplate, seedCause.getProperties());
+                    url = TextUtils.replaceTokens(urlTemplate, seedCause.getProperties());
                 }
 
                 // Collects all cause messages from highest to lowest level
                 String seedCauseErrorTemplate = seedCause.getTemplate(null);
                 if (seedCauseErrorTemplate != null) {
-                    causes.add(String.format(CODE_PATTERN, formatErrorClass(seedCause.getErrorCode()), replaceTokens(seedCauseErrorTemplate, seedCause.getProperties())));
+                    causes.add(String.format(CODE_PATTERN, formatErrorClass(seedCause.getErrorCode()), TextUtils.replaceTokens(seedCauseErrorTemplate, seedCause.getProperties())));
                 } else {
                     causes.add(theCause.getMessage());
                 }
@@ -282,21 +280,21 @@ public class SeedException extends RuntimeException {
         if (message == null) {
             String messageTemplate = getTemplate(null);
             if (messageTemplate != null) {
-                message = replaceTokens(messageTemplate, getProperties());
+                message = TextUtils.replaceTokens(messageTemplate, getProperties());
             }
         }
 
         if (fix == null) {
             String fixTemplate = getTemplate("fix");
             if (fixTemplate != null) {
-                fix = replaceTokens(fixTemplate, getProperties());
+                fix = TextUtils.replaceTokens(fixTemplate, getProperties());
             }
         }
 
         if (url == null) {
             String urlTemplate = getTemplate("url");
             if (urlTemplate != null) {
-                url = replaceTokens(urlTemplate, getProperties());
+                url = TextUtils.replaceTokens(urlTemplate, getProperties());
             }
         }
     }

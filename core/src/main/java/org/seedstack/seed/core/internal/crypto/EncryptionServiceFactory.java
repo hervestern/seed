@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal.crypto;
 
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.core.internal.utils.SeedReflectionUtils;
 import org.seedstack.seed.crypto.CryptoConfig;
 import org.seedstack.seed.crypto.EncryptionService;
 import org.seedstack.seed.SeedException;

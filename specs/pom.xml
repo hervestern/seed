@@ -26,11 +26,6 @@
             <version>${nuun-kernel.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.seedstack.shed</groupId>
-            <artifactId>shed</artifactId>
-            <version>${shed.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.seedstack.coffig</groupId>
             <artifactId>coffig</artifactId>
             <version>${coffig.version}</version>

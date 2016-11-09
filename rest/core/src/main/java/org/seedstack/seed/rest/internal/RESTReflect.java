@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.rest.internal;
 
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.core.internal.utils.SeedReflectionUtils;
 import org.seedstack.seed.rest.Rel;
 
 import javax.ws.rs.BeanParam;

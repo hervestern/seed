@@ -11,7 +11,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.AbstractIterator;
 import org.reflections.vfs.Vfs;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.utils.SeedLoggingUtils;
+import org.seedstack.seed.core.internal.utils.SeedLoggingUtils;
 import org.seedstack.seed.web.internal.WebErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

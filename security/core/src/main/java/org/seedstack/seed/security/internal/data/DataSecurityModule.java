@@ -23,9 +23,9 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Set;
 
-import static org.seedstack.seed.core.utils.SeedReflectionUtils.allParametersAnnotationsFromAncestors;
-import static org.seedstack.seed.core.utils.SeedReflectionUtils.isPresent;
-import static org.seedstack.seed.core.utils.SeedReflectionUtils.methodsFromAncestors;
+import static org.seedstack.seed.core.internal.utils.SeedReflectionUtils.allParametersAnnotationsFromAncestors;
+import static org.seedstack.seed.core.internal.utils.SeedReflectionUtils.isPresent;
+import static org.seedstack.seed.core.internal.utils.SeedReflectionUtils.methodsFromAncestors;
 
 /**
  * Configuration Unit regarding Data Security

@@ -10,7 +10,7 @@ package org.seedstack.seed.core.internal.tools.config;
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
 import org.seedstack.coffig.util.Utils;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.core.internal.utils.SeedReflectionUtils;
 
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.Field;

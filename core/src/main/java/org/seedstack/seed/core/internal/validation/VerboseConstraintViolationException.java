@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.core.internal.validation;
 
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.core.internal.utils.SeedReflectionUtils;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;

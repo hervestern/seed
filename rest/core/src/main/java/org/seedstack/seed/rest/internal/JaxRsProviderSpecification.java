@@ -8,17 +8,17 @@
 package org.seedstack.seed.rest.internal;
 
 import org.kametic.specifications.AbstractSpecification;
-import org.seedstack.seed.core.utils.BaseClassSpecifications;
+import org.seedstack.seed.core.internal.utils.BaseClassSpecifications;
 
 import javax.ws.rs.ext.Provider;
 
-import static org.seedstack.seed.core.utils.BaseClassSpecifications.classAnnotatedWith;
+import static org.seedstack.seed.core.internal.utils.BaseClassSpecifications.classAnnotatedWith;
 
 
 public class JaxRsProviderSpecification extends AbstractSpecification<Class<?>> {
     @Override
     @SuppressWarnings("unchecked")
     public boolean isSatisfiedBy(Class<?> candidate) {
-        return BaseClassSpecifications.or(classAnnotatedWith(Provider.class)).isSatisfiedBy(candidate);
+        return classAnnotatedWith(Provider.class).isSatisfiedBy(candidate);
     }
 }

@@ -11,7 +11,7 @@ import com.google.common.collect.Maps;
 import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.CoreErrorCode;
-import org.seedstack.seed.core.utils.SeedLoggingUtils;
+import org.seedstack.seed.core.internal.utils.SeedLoggingUtils;
 import org.seedstack.seed.spi.diagnostic.DiagnosticInfoCollector;
 import org.seedstack.seed.spi.diagnostic.DiagnosticReporter;
 import org.slf4j.Logger;

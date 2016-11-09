@@ -10,7 +10,7 @@ package org.seedstack.seed.web.internal.resources;
 import com.google.inject.assistedinject.Assisted;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.core.internal.utils.SeedReflectionUtils;
 import org.seedstack.seed.web.ResourceInfo;
 import org.seedstack.seed.web.ResourceRequest;
 import org.seedstack.seed.web.WebConfig;

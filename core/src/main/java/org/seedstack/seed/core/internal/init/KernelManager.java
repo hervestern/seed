@@ -17,7 +17,7 @@ import org.seedstack.seed.core.Seed;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.scan.ClasspathScanHandler;
 import org.seedstack.seed.core.internal.scan.FallbackUrlType;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.core.internal.utils.SeedReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

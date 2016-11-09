@@ -13,7 +13,7 @@ import io.nuun.kernel.api.plugin.PluginException;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
-import org.seedstack.seed.core.utils.SeedMatchers;
+import org.seedstack.seed.core.internal.utils.SeedMatchers;
 import org.seedstack.seed.transaction.Transactional;
 import org.seedstack.seed.transaction.TransactionConfig;
 import org.seedstack.seed.transaction.spi.TransactionHandler;

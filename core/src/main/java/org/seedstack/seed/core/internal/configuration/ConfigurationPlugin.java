@@ -22,7 +22,7 @@ import org.seedstack.seed.DiagnosticManager;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.SeedRuntime;
 import org.seedstack.seed.core.internal.CoreErrorCode;
-import org.seedstack.seed.core.utils.SeedReflectionUtils;
+import org.seedstack.seed.core.internal.utils.SeedReflectionUtils;
 import org.seedstack.seed.spi.config.ApplicationProvider;
 
 import java.io.IOException;
