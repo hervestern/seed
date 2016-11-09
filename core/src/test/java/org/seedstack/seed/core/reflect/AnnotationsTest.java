@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package org.seedstack.seed.core.reflect;
 
 import org.junit.Test;
@@ -113,12 +120,12 @@ public class AnnotationsTest {
 
     @TypeAnnotation
     private interface AnnotatedInterface {
-
+        void notAnnotatedMethod();
     }
 
     @TypeMetaAnnotation
     private interface MetaAnnotatedInterface {
-
+        void notAnnotatedMethod();
     }
 
     private static class AnnotatedByBaseClass extends AnnotatedBaseClass {
@@ -147,7 +154,10 @@ public class AnnotationsTest {
         AnnotatedByInterface() {
         }
 
-        void notAnnotatedMethod() {
+        public void notAnnotatedMethod() {
+        }
+
+        void notAnnotatedLocalMethod() {
         }
     }
 
@@ -157,7 +167,10 @@ public class AnnotationsTest {
         MetaAnnotatedByInterface() {
         }
 
-        void notAnnotatedMethod() {
+        public void notAnnotatedMethod() {
+        }
+
+        void notAnnotatedLocalMethod() {
         }
     }
 
@@ -361,6 +374,17 @@ public class AnnotationsTest {
         Method metaAnnotatedMethod = MethodsAnnotatedByInterface.class.getDeclaredMethod("metaAnnotatedMethod");
         assertThat(Annotations.on(metaAnnotatedMethod).find(MethodAnnotation.class)).isNotPresent();
         assertThat(Annotations.on(metaAnnotatedMethod).traversingOverriddenMembers().includingMetaAnnotations().find(MethodAnnotation.class)).isPresent();
+    }
+
+    @Test
+    public void classAnnotationScopeIsLimited() throws Exception {
+        Method notAnnotatedMethod = AnnotatedByInterface.class.getDeclaredMethod("notAnnotatedMethod");
+        assertThat(Annotations.on(notAnnotatedMethod).find(TypeAnnotation.class)).isNotPresent();
+        assertThat(Annotations.on(notAnnotatedMethod).fallingBackOnClasses().find(TypeAnnotation.class)).isNotPresent();
+        assertThat(Annotations.on(notAnnotatedMethod).fallingBackOnClasses().traversingInterfaces().find(TypeAnnotation.class)).isPresent();
+        assertThat(Annotations.on(notAnnotatedMethod).traversingOverriddenMembers().find(TypeAnnotation.class)).isNotPresent();
+        assertThat(Annotations.on(notAnnotatedMethod).traversingOverriddenMembers().fallingBackOnClasses().find(TypeAnnotation.class)).isPresent();
+
     }
 
     private Annotations.OnClass on(AnnotatedElement annotatedElement, boolean fallback, boolean meta) {

@@ -9,6 +9,7 @@ package org.seedstack.seed.core.internal.utils;
 
 import com.google.inject.matcher.AbstractMatcher;
 import com.google.inject.matcher.Matcher;
+import org.seedstack.seed.core.reflect.Annotations;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -62,7 +63,12 @@ public final class SeedMatchers {
         return new AbstractMatcher<Method>() {
             @Override
             public boolean matches(Method method) {
-                return SeedReflectionUtils.getMethodOrAncestorMetaAnnotatedWith(method, anoKlass) != null;
+                return Annotations.on(method)
+                        .traversingOverriddenMembers()
+                        .fallingBackOnClasses()
+                        .includingMetaAnnotations()
+                        .find(anoKlass)
+                        .isPresent();
             }
         };
     }
