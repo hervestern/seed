@@ -26,9 +26,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataManagerIT {
     @Rule
     public SeedITRule rule = new SeedITRule(this);
-
     @Inject
-    DataManager dataManager;
+    private DataManager dataManager;
 
     @Test
     public void data_manager_is_injected() {
@@ -58,9 +57,6 @@ public class DataManagerIT {
         assertThat(TestDataImporter.getData().get(1).getLastName()).isEqualTo("truc");
 
         assertThat(TestDataImporter2.getData().size()).isEqualTo(0);
-//
-//        assertThat(TestDataImporter2.getData().get(0).getFirstName()).isEqualTo("toto2");
-//        assertThat(TestDataImporter2.getData().get(0).getLastName()).isEqualTo("titi2");
     }
 
     @Test

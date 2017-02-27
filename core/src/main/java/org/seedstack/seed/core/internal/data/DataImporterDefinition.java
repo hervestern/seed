@@ -20,7 +20,6 @@ class DataImporterDefinition<T> {
     private final Class<T> importedClass;
     private final Class<? extends DataImporter<T>> dataImporterClass;
 
-
     DataImporterDefinition(String name, String group, Class<T> importedClass, Class<? extends DataImporter<T>> dataImporterClass) {
         this.name = name;
         this.group = group;

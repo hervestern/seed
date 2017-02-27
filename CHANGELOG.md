@@ -1,3 +1,7 @@
+# Version 3.1.1 (2017-03-??)
+
+* [new] Add the ability to programmatically register data importers and exporters.
+
 # Version 3.1.1 (2017-02-20)
 
 * [chg] Default diagnostic dump changed from JSON to YAML.

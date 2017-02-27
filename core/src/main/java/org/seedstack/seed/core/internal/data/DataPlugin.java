@@ -19,6 +19,7 @@ import org.seedstack.seed.DataManager;
 import org.seedstack.seed.DataSet;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
+import org.seedstack.seed.spi.DataManagementProvider;
 import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,24 +30,21 @@ import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This plugin provides data import and export facilities.
  */
-public class DataPlugin extends AbstractSeedPlugin {
+public class DataPlugin extends AbstractSeedPlugin implements DataManagementProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataPlugin.class);
-
     private final Specification<Class<?>> dataExporterSpecification = and(classImplements(DataExporter.class), classAnnotatedWith(DataSet.class));
     private final Specification<Class<?>> dataImporterSpecification = and(classImplements(DataImporter.class), classAnnotatedWith(DataSet.class));
-
-    private final Map<String, Map<String, DataExporterDefinition<Object>>> allDataExporters = new HashMap<>();
-    private final Map<String, Map<String, DataImporterDefinition<Object>>> allDataImporters = new HashMap<>();
-
+    private final Map<String, Map<String, DataExporterDefinition<?>>> allDataExporters = new ConcurrentHashMap<>();
+    private final Map<String, Map<String, DataImporterDefinition<?>>> allDataImporters = new ConcurrentHashMap<>();
     private boolean loadInitializationData;
     private boolean forceInitializationData;
-
     @Inject
     private DataManager dataManager;
 
@@ -75,47 +73,67 @@ public class DataPlugin extends AbstractSeedPlugin {
         }
 
         Collection<Class<?>> scannedDataExporterClasses = initContext.scannedTypesBySpecification().get(dataExporterSpecification);
-        for (Class<?> scannedDataExporterClass : scannedDataExporterClasses) {
-            if (DataExporter.class.isAssignableFrom(scannedDataExporterClass)) {
-                DataSet dataSet = scannedDataExporterClass.getAnnotation(DataSet.class);
-                Map<String, DataExporterDefinition<Object>> nameDataExporterDefinitionMap = allDataExporters.get(dataSet.group());
-                if (nameDataExporterDefinitionMap == null) {
-                    nameDataExporterDefinitionMap = new HashMap<>();
-                }
-
-                Class exportedClass = getTypeParameter(scannedDataExporterClass, DataExporter.class);
+        for (Class<?> dataExporterClass : scannedDataExporterClasses) {
+            if (DataExporter.class.isAssignableFrom(dataExporterClass)) {
+                DataSet dataSet = dataExporterClass.getAnnotation(DataSet.class);
+                Class exportedClass = getTypeParameter(dataExporterClass, DataExporter.class);
                 if (exportedClass == null) {
-                    throw SeedException.createNew(DataErrorCode.MISSING_TYPE_PARAMETER).put("class", scannedDataExporterClass);
+                    throw SeedException.createNew(DataErrorCode.MISSING_TYPE_PARAMETER).put("class", dataExporterClass);
                 }
-
-                DataExporterDefinition dataExporterDefinition = new DataExporterDefinition(dataSet.name(), dataSet.group(), exportedClass, scannedDataExporterClass);
-                nameDataExporterDefinitionMap.put(dataSet.name(), dataExporterDefinition);
-                allDataExporters.put(dataSet.group(), nameDataExporterDefinitionMap);
+                getGroupExporters(dataSet.group()).putIfAbsent(
+                        dataSet.name(),
+                        new DataExporterDefinition(
+                                dataSet.name(),
+                                dataSet.group(),
+                                exportedClass,
+                                dataExporterClass
+                        )
+                );
             }
         }
 
-
         Collection<Class<?>> scannedDataImporterClasses = initContext.scannedTypesBySpecification().get(dataImporterSpecification);
-        for (Class<?> scannedDataImporterClass : scannedDataImporterClasses) {
-            if (DataImporter.class.isAssignableFrom(scannedDataImporterClass)) {
-                DataSet dataSet = scannedDataImporterClass.getAnnotation(DataSet.class);
-                Map<String, DataImporterDefinition<Object>> nameDataImporterDefinitionMap = allDataImporters.get(dataSet.group());
-                if (nameDataImporterDefinitionMap == null) {
-                    nameDataImporterDefinitionMap = new HashMap<>();
+        for (Class<?> dataImporterClass : scannedDataImporterClasses) {
+            if (DataImporter.class.isAssignableFrom(dataImporterClass)) {
+                DataSet dataSet = dataImporterClass.getAnnotation(DataSet.class);
+                Class importedClass = getTypeParameter(dataImporterClass, DataImporter.class);
+                if (importedClass == null) {
+                    throw SeedException.createNew(DataErrorCode.MISSING_TYPE_PARAMETER).put("class", dataImporterClass);
                 }
-
-                Class actualType = getTypeParameter(scannedDataImporterClass, DataImporter.class);
-                if (actualType == null) {
-                    throw SeedException.createNew(DataErrorCode.MISSING_TYPE_PARAMETER).put("class", scannedDataImporterClass);
-                }
-
-                DataImporterDefinition dataImporterDefinition = new DataImporterDefinition(dataSet.name(), dataSet.group(), actualType, scannedDataImporterClass);
-                nameDataImporterDefinitionMap.put(dataSet.name(), dataImporterDefinition);
-                allDataImporters.put(dataSet.group(), nameDataImporterDefinitionMap);
+                getGroupImporters(dataSet.group()).putIfAbsent(
+                        dataSet.name(),
+                        new DataImporterDefinition(
+                                dataSet.name(),
+                                dataSet.group(),
+                                importedClass,
+                                dataImporterClass
+                        )
+                );
             }
         }
 
         return InitState.INITIALIZED;
+    }
+
+    private Map<String, DataExporterDefinition<?>> getGroupExporters(String group) {
+        Map<String, DataExporterDefinition<?>> nameDataExporterDefinitionMap = allDataExporters.get(group);
+        if (nameDataExporterDefinitionMap == null) {
+            allDataExporters.putIfAbsent(group, nameDataExporterDefinitionMap = new ConcurrentHashMap<>());
+        }
+        return nameDataExporterDefinitionMap;
+    }
+
+    private Map<String, DataImporterDefinition<?>> getGroupImporters(String group) {
+        Map<String, DataImporterDefinition<?>> groupImporters = allDataImporters.get(group);
+        if (groupImporters == null) {
+            allDataImporters.putIfAbsent(group, groupImporters = new ConcurrentHashMap<>());
+        }
+        return groupImporters;
+    }
+
+    @Override
+    public Object nativeUnitModule() {
+        return new DataModule(Collections.unmodifiableMap(allDataExporters), Collections.unmodifiableMap(allDataImporters));
     }
 
     @Override
@@ -123,8 +141,8 @@ public class DataPlugin extends AbstractSeedPlugin {
         ClassLoader classLoader = ClassLoaders.findMostCompleteClassLoader(DataPlugin.class);
 
         if (loadInitializationData) {
-            for (Map<String, DataImporterDefinition<Object>> dataImporterDefinitionMap : allDataImporters.values()) {
-                for (DataImporterDefinition<Object> dataImporterDefinition : dataImporterDefinitionMap.values()) {
+            for (Map<String, DataImporterDefinition<?>> dataImporterDefinitionMap : allDataImporters.values()) {
+                for (DataImporterDefinition<?> dataImporterDefinition : dataImporterDefinitionMap.values()) {
                     String dataPath = String.format("META-INF/data/%s/%s.json", dataImporterDefinition.getGroup(), dataImporterDefinition.getName());
                     InputStream dataStream = classLoader.getResourceAsStream(dataPath);
 
@@ -145,24 +163,54 @@ public class DataPlugin extends AbstractSeedPlugin {
         }
     }
 
-    private Class getTypeParameter(Class<?> scannedDataImporterClass, Class<?> genericInterface) {
+    @Override
+    public <T> void registerDataImporter(String group, String name, Class<DataImporter<T>> dataImporterClass) {
+        if (getGroupImporters(group).putIfAbsent(
+                name,
+                new DataImporterDefinition<>(
+                        name,
+                        group,
+                        getTypeParameter(dataImporterClass, DataImporter.class),
+                        dataImporterClass
+                )
+        ) != null) {
+            throw SeedException.createNew(DataErrorCode.ALREADY_EXISTING_IMPORTER)
+                    .put("group", group)
+                    .put("name", name);
+        }
+    }
+
+    @Override
+    public <T> void registerDataExporter(String group, String name, Class<DataExporter<T>> dataExporterClass) {
+        if (getGroupExporters(group).putIfAbsent(
+                name,
+                new DataExporterDefinition<>(
+                        name,
+                        group,
+                        getTypeParameter(dataExporterClass, DataExporter.class),
+                        dataExporterClass
+                )
+        ) != null) {
+            throw SeedException.createNew(DataErrorCode.ALREADY_EXISTING_EXPORTER)
+                    .put("group", group)
+                    .put("name", name);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> Class<T> getTypeParameter(Class<?> importerOrExporterClass, Class<?> genericInterface) {
         Class actualType = null;
         // Get all generic interfaces implemented by the scanned class
-        Type[] genericInterfaces = scannedDataImporterClass.getGenericInterfaces();
+        Type[] genericInterfaces = importerOrExporterClass.getGenericInterfaces();
         for (Type type : genericInterfaces) {
             if (type instanceof ParameterizedType) {
                 Class anInterface = (Class) ((ParameterizedType) type).getRawType();
-                // If the interface is DataImporter get its type parameter
+                // If the interface is the one get its type parameter
                 if (genericInterface.isAssignableFrom(anInterface)) {
                     actualType = (Class) ((ParameterizedType) type).getActualTypeArguments()[0];
                 }
             }
         }
-        return actualType;
-    }
-
-    @Override
-    public Object nativeUnitModule() {
-        return new DataModule(allDataExporters, allDataImporters);
+        return (Class<T>) actualType;
     }
 }

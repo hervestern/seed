@@ -9,10 +9,9 @@ package org.seedstack.seed.core.internal.data;
 
 import org.seedstack.shed.exception.ErrorCode;
 
-/**
- * SEED core data error codes.
- */
 enum DataErrorCode implements ErrorCode {
+    ALREADY_EXISTING_IMPORTER,
+    ALREADY_EXISTING_EXPORTER,
     EXPORT_FAILED,
     FAILED_TO_COMMIT_IMPORT,
     FAILED_TO_PARSE_DATA_STREAM,

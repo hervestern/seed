@@ -16,6 +16,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Lists;
 import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.TypeLiteral;
+import com.google.inject.util.Types;
 import org.seedstack.seed.DataExporter;
 import org.seedstack.seed.DataImporter;
 import org.seedstack.seed.DataManager;
@@ -48,10 +51,10 @@ class DataManagerImpl implements DataManager {
     private static final String CLASSES_MAP_KEY = "%s:%s";
 
     @Inject
-    private Map<String, Map<String, DataExporterDefinition<Object>>> allDataExporters;
+    private Map<String, Map<String, DataExporterDefinition<?>>> allDataExporters;
 
     @Inject
-    private Map<String, Map<String, DataImporterDefinition<Object>>> allDataImporters;
+    private Map<String, Map<String, DataImporterDefinition<?>>> allDataImporters;
 
     @Inject
     private Injector injector;
@@ -67,14 +70,14 @@ class DataManagerImpl implements DataManager {
 
     @Override
     public void exportData(OutputStream outputStream, String group) {
-        Map<String, DataExporterDefinition<Object>> dataExporterDefinitions = allDataExporters.get(group);
+        Map<String, DataExporterDefinition<?>> dataExporterDefinitions = allDataExporters.get(group);
 
         if (dataExporterDefinitions == null) {
             throw SeedException.createNew(DataErrorCode.NO_EXPORTER_FOUND).put(DATA_SET, group);
         }
 
-        List<DataSetMarker<Object>> allIterators = new ArrayList<>();
-        for (DataExporterDefinition<Object> dataExporterDefinition : dataExporterDefinitions.values()) {
+        List<DataSetMarker<?>> allIterators = new ArrayList<>();
+        for (DataExporterDefinition<?> dataExporterDefinition : dataExporterDefinitions.values()) {
             allIterators.add(new DataSetMarker<>(
                     dataExporterDefinition.getGroup(),
                     dataExporterDefinition.getName(),
@@ -87,32 +90,37 @@ class DataManagerImpl implements DataManager {
 
     @Override
     public void exportData(OutputStream outputStream, String group, String name) {
-        Map<String, DataExporterDefinition<Object>> dataExporterDefinitionMap = allDataExporters.get(group);
+        Map<String, DataExporterDefinition<?>> dataExporterDefinitionMap = allDataExporters.get(group);
 
         if (dataExporterDefinitionMap == null) {
             throw SeedException.createNew(DataErrorCode.NO_EXPORTER_FOUND).put(DATA_SET, String.format(CLASSES_MAP_KEY, group, name));
         }
 
-        DataExporterDefinition<Object> dataExporterDefinition = dataExporterDefinitionMap.get(name);
+        DataExporterDefinition<?> dataExporterDefinition = dataExporterDefinitionMap.get(name);
 
         if (dataExporterDefinition == null) {
             throw SeedException.createNew(DataErrorCode.NO_EXPORTER_FOUND).put(DATA_SET, String.format(CLASSES_MAP_KEY, group, name));
         }
 
-        dumpAll(Lists.newArrayList(new DataSetMarker(
+        dumpAll(Lists.newArrayList(new DataSetMarker<>(
                 dataExporterDefinition.getGroup(),
                 dataExporterDefinition.getName(),
-                injector.getInstance(dataExporterDefinition.getDataExporterClass()).exportData()
+                getExporter(dataExporterDefinition).exportData()
         )), outputStream);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> DataExporter<T> getExporter(DataExporterDefinition<?> dataExporterDefinition) {
+        return injector.getInstance(Key.get((TypeLiteral<DataExporter<T>>) TypeLiteral.get(Types.newParameterizedType(DataExporter.class, dataExporterDefinition.getExportedClass()))));
     }
 
     @Override
     public void exportData(OutputStream outputStream) {
-        List<DataSetMarker<Object>> dataSets = new ArrayList<>();
+        List<DataSetMarker<?>> dataSets = new ArrayList<>();
 
-        for (Map<String, DataExporterDefinition<Object>> dataExporterDefinitionMap : allDataExporters.values()) {
-            for (DataExporterDefinition<Object> dataExporterDefinition : dataExporterDefinitionMap.values()) {
-                DataExporter<Object> dataExporter = injector.getInstance(dataExporterDefinition.getDataExporterClass());
+        for (Map<String, DataExporterDefinition<?>> dataExporterDefinitionMap : allDataExporters.values()) {
+            for (DataExporterDefinition<?> dataExporterDefinition : dataExporterDefinitionMap.values()) {
+                DataExporter<?> dataExporter = injector.getInstance(dataExporterDefinition.getDataExporterClass());
                 dataSets.add(new DataSetMarker<>(dataExporterDefinition.getGroup(), dataExporterDefinition.getName(), dataExporter.exportData()));
             }
         }
@@ -122,7 +130,7 @@ class DataManagerImpl implements DataManager {
 
     @Override
     public void importData(InputStream inputStream, String acceptGroup, String acceptName, boolean clear) {
-        Set<DataImporter<Object>> usedDataImporters = new HashSet<>();
+        Set<DataImporter<?>> usedDataImporters = new HashSet<>();
 
         try {
             ParsingState state = ParsingState.START;
@@ -203,7 +211,7 @@ class DataManagerImpl implements DataManager {
                 jsonToken = jsonParser.nextToken();
             }
         } catch (Exception e1) {
-            for (DataImporter<Object> usedDataImporter : usedDataImporters) {
+            for (DataImporter<?> usedDataImporter : usedDataImporters) {
                 try {
                     usedDataImporter.rollback();
                 } catch (Exception e2) {
@@ -216,7 +224,7 @@ class DataManagerImpl implements DataManager {
             throw SeedException.wrap(e1, DataErrorCode.IMPORT_FAILED);
         }
 
-        for (DataImporter<Object> usedDataImporter : usedDataImporters) {
+        for (DataImporter<?> usedDataImporter : usedDataImporters) {
             try {
                 usedDataImporter.commit(clear);
             } catch (Exception e) {
@@ -234,44 +242,36 @@ class DataManagerImpl implements DataManager {
                 .put("offset", jsonLocation.getCharOffset());
     }
 
-    private DataImporter<Object> consumeItems(JsonParser jsonParser, String group, String name, String acceptGroup, String acceptName) throws IOException {
-
-        Map<String, DataImporterDefinition<Object>> dataImporterDefinitionMap = allDataImporters.get(group);
-
+    private DataImporter<?> consumeItems(JsonParser jsonParser, String group, String name, String acceptGroup, String acceptName) throws IOException {
+        Map<String, DataImporterDefinition<?>> dataImporterDefinitionMap = allDataImporters.get(group);
         if (dataImporterDefinitionMap == null) {
             throw SeedException.createNew(DataErrorCode.NO_IMPORTER_FOUND)
                     .put(GROUP, group)
                     .put(NAME, name);
         }
 
-        DataImporterDefinition<Object> currentImporterDefinition = dataImporterDefinitionMap.get(name);
-
+        DataImporterDefinition<?> currentImporterDefinition = dataImporterDefinitionMap.get(name);
         if (currentImporterDefinition == null) {
             throw SeedException.createNew(DataErrorCode.NO_IMPORTER_FOUND)
                     .put(GROUP, group)
                     .put(NAME, name);
         }
-
         if (!group.equals(currentImporterDefinition.getGroup())) {
             throw SeedException.createNew(DataErrorCode.UNEXPECTED_DATA_TYPE)
                     .put(DATA_SET, String.format(CLASSES_MAP_KEY, group, name))
                     .put(IMPORTER_CLASS, currentImporterDefinition.getDataImporterClass().getName());
         }
-
         if (!name.equals(currentImporterDefinition.getName())) {
             throw SeedException.createNew(DataErrorCode.UNEXPECTED_DATA_TYPE)
                     .put(DATA_SET, String.format(CLASSES_MAP_KEY, group, name))
                     .put(IMPORTER_CLASS, currentImporterDefinition.getDataImporterClass().getName());
         }
 
-
         DataImporter<Object> currentDataImporter = null;
         if ((acceptGroup == null || acceptGroup.equals(group)) && (acceptName == null || acceptName.equals(name))) {
-
-            currentDataImporter = injector.getInstance(currentImporterDefinition.getDataImporterClass());
+            currentDataImporter = getImporter(currentImporterDefinition);
 
             // Check if items contains an array
-
             if (jsonParser.nextToken() != JsonToken.START_ARRAY) {
                 throw new IllegalArgumentException("Items should be an array");
             }
@@ -280,11 +280,10 @@ class DataManagerImpl implements DataManager {
 
             // If the array is not empty consume it
             if (jsonParser.getCurrentToken() != JsonToken.END_ARRAY) {
-                Iterator<Object> objectIterator = jsonParser.readValuesAs(currentImporterDefinition.getImportedClass());
+                Iterator<?> iterator = jsonParser.readValuesAs(currentImporterDefinition.getImportedClass());
 
-
-                while (objectIterator.hasNext()) {
-                    currentDataImporter.importData(objectIterator.next());
+                while (iterator.hasNext()) {
+                    currentDataImporter.importData(iterator.next());
                 }
 
                 // The array should end correctly
@@ -298,32 +297,37 @@ class DataManagerImpl implements DataManager {
         return currentDataImporter;
     }
 
+    @SuppressWarnings("unchecked")
+    private <T> DataImporter<T> getImporter(DataImporterDefinition<?> dataImporterDefinition) {
+        return injector.getInstance(Key.get((TypeLiteral<DataImporter<T>>) TypeLiteral.get(Types.newParameterizedType(DataImporter.class, dataImporterDefinition.getImportedClass()))));
+    }
+
     @Override
     public boolean isInitialized(String group, String name) {
-        Map<String, DataImporterDefinition<Object>> dataImporterDefinitionMap = allDataImporters.get(group);
+        Map<String, DataImporterDefinition<?>> dataImporterDefinitionMap = allDataImporters.get(group);
 
         if (dataImporterDefinitionMap == null) {
             throw SeedException.createNew(DataErrorCode.NO_IMPORTER_FOUND).put(GROUP, group).put(NAME, name);
         }
 
-        DataImporterDefinition<Object> dataImporterDefinition = dataImporterDefinitionMap.get(name);
+        DataImporterDefinition<?> dataImporterDefinition = dataImporterDefinitionMap.get(name);
 
         if (dataImporterDefinition == null) {
             throw SeedException.createNew(DataErrorCode.NO_IMPORTER_FOUND).put(GROUP, group).put(NAME, name);
         }
 
-        DataImporter<Object> dataImporter = injector.getInstance(dataImporterDefinition.getDataImporterClass());
+        DataImporter<?> dataImporter = injector.getInstance(dataImporterDefinition.getDataImporterClass());
         return dataImporter.isInitialized();
     }
 
-    private void dumpAll(List<DataSetMarker<Object>> dataSetMarker, OutputStream outputStream) {
+    private void dumpAll(List<DataSetMarker<?>> dataSetMarker, OutputStream outputStream) {
         try {
             JsonGenerator jsonGenerator = this.jsonFactory.createGenerator(new OutputStreamWriter(outputStream, Charset.forName(UTF_8)));
             ObjectWriter objectWriter = objectMapper.writer();
 
             jsonGenerator.writeStartArray();
 
-            for (DataSetMarker<Object> objectDataSetMarker : dataSetMarker) {
+            for (DataSetMarker<?> objectDataSetMarker : dataSetMarker) {
                 // start
                 jsonGenerator.writeStartObject();
 
