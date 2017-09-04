@@ -7,17 +7,30 @@
  */
 package org.seedstack.seed.security.internal;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.matcher.Matchers;
 import org.seedstack.seed.security.RequiresPermissions;
+import org.seedstack.seed.security.RequiresRest;
 import org.seedstack.seed.security.RequiresRoles;
 import org.seedstack.seed.security.internal.authorization.RequiresPermissionsInterceptor;
+import org.seedstack.seed.security.internal.authorization.RequiresRestInterceptor;
 import org.seedstack.seed.security.internal.authorization.RequiresRolesInterceptor;
+
+import com.google.inject.AbstractModule;
+import com.google.inject.matcher.Matchers;
 
 class SecurityAopModule extends AbstractModule {
     @Override
     protected void configure() {
         bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresRoles.class), new RequiresRolesInterceptor(new ShiroSecuritySupport()));
         bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresPermissions.class), new RequiresPermissionsInterceptor(new ShiroSecuritySupport()));
+        bindRestInterceptor();
     }
+    
+    
+    private void bindRestInterceptor() {
+      RequiresRestInterceptor requiresRestInterceptor = new RequiresRestInterceptor(new ShiroSecuritySupport());
+      //Allows a single annotation at class level, or single annotations on each method
+      bindInterceptor(Matchers.annotatedWith(RequiresRest.class), Matchers.any(), requiresRestInterceptor);
+      bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresRest.class), requiresRestInterceptor);
+    }
+    
 }
