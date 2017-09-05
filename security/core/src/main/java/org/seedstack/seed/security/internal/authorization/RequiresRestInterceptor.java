@@ -12,13 +12,10 @@ import java.lang.annotation.Annotation;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.seedstack.seed.security.RequiresRest;
-import org.seedstack.seed.security.SecuritySupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RequiresRestInterceptor implements MethodInterceptor {
-
-  private SecuritySupport securitySupport;
+public class RequiresRestInterceptor extends AbstractInterceptor implements MethodInterceptor {
 
   private Logger logger = LoggerFactory.getLogger(RequiresRestInterceptor.class);
 
@@ -35,8 +32,7 @@ public class RequiresRestInterceptor implements MethodInterceptor {
    * @param securitySupport
    *          the security support
    */
-  public RequiresRestInterceptor(SecuritySupport securitySupport) {
-    this.securitySupport = securitySupport;
+  public RequiresRestInterceptor() {
   }
 
   @Override
@@ -54,7 +50,10 @@ public class RequiresRestInterceptor implements MethodInterceptor {
     }
     RequiresRest rrAnnotation = (RequiresRest) annotation;
     String permission = String.format("%s:%s", rrAnnotation.value(), verb.getAction());
-    securitySupport.checkPermission(permission);
+    
+    
+    
+    checkPermission(permission);
     return invocation.proceed();
 
   }

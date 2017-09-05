@@ -7,66 +7,64 @@
  */
 package org.seedstack.seed.security.internal.authorization;
 
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
+
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.seedstack.seed.security.AuthorizationException;
 import org.seedstack.seed.security.Logical;
 import org.seedstack.seed.security.RequiresPermissions;
-import org.seedstack.seed.security.SecuritySupport;
-
-import java.lang.annotation.Annotation;
 
 /**
  * Interceptor for the annotation RequiresPermissions
  */
-public class RequiresPermissionsInterceptor implements MethodInterceptor {
+public class RequiresPermissionsInterceptor extends AbstractInterceptor
+    implements MethodInterceptor {
 
-    private SecuritySupport securitySupport;
+  /**
+   * Constructor
+   * 
+   */
+  public RequiresPermissionsInterceptor() {
+  }
 
-    /**
-     * Constructor
-     * 
-     * @param securitySupport
-     *            the security support
-     */
-    public RequiresPermissionsInterceptor(SecuritySupport securitySupport) {
-        this.securitySupport = securitySupport;
+  @Override
+  public Object invoke(MethodInvocation invocation) throws Throwable {
+    Annotation annotation = findAnnotation(invocation);
+    if (annotation == null) {
+      return invocation.proceed();
     }
+    RequiresPermissions rpAnnotation = (RequiresPermissions) annotation;
+    String[] perms = rpAnnotation.value();
 
-    @Override
-    public Object invoke(MethodInvocation invocation) throws Throwable {
-        Annotation annotation = findAnnotation(invocation);
-        if (annotation == null) {
-            return invocation.proceed();
-        }
-        RequiresPermissions rpAnnotation = (RequiresPermissions) annotation;
-        String[] perms = rpAnnotation.value();
-        if (perms.length == 1) {
-            securitySupport.checkPermission(perms[0]);
-            return invocation.proceed();
-        } else if (Logical.OR.equals(rpAnnotation.logical())) {
-            boolean hasAtLeastOnePermission = false;
-            for (String permission : perms) {
-                if (securitySupport.isPermitted(permission)) {
-                    hasAtLeastOnePermission = true;
-                    break;
-                }
-            }
-            if (!hasAtLeastOnePermission) {
-                throw new AuthorizationException("User does not have any of the permissions to access method " + invocation.getMethod().toString());
-            }
+    if (perms.length == 1) {
+      this.checkPermission(perms[0]);
+      return invocation.proceed();
+    } else {
+      boolean isAllowed = this.hasPermissions(perms, rpAnnotation.logical());
+
+      if (!isAllowed) {
+        if (Logical.OR.equals(rpAnnotation.logical())) {
+          throw new AuthorizationException(
+              "User does not have any of the permissions to access method "
+                  + invocation.getMethod().toString());
         } else {
-            // Otherwise rrAnnotation.logical() is by default considered as Logical.AND
-            securitySupport.checkPermissions(perms);
+          throw new AuthorizationException(
+              "Subject doesn't have permissions " + Arrays.toString(perms));
         }
-        return invocation.proceed();
+      }
+
     }
 
-    private Annotation findAnnotation(MethodInvocation invocation) {
-        Annotation annotation = invocation.getMethod().getAnnotation(RequiresPermissions.class);
-        if (annotation == null) {
-            annotation = invocation.getThis().getClass().getAnnotation(RequiresPermissions.class);
-        }
-        return annotation;
+    return invocation.proceed();
+  }
+
+  private Annotation findAnnotation(MethodInvocation invocation) {
+    Annotation annotation = invocation.getMethod().getAnnotation(RequiresPermissions.class);
+    if (annotation == null) {
+      annotation = invocation.getThis().getClass().getAnnotation(RequiresPermissions.class);
     }
+    return annotation;
+  }
 }
