@@ -7,29 +7,66 @@
  */
 package org.seedstack.seed.security.internal;
 
-import org.seedstack.seed.security.RequiresPermissions;
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.swing.plaf.synth.SynthSeparatorUI;
+
 import org.seedstack.seed.security.RequiresCRUD;
+import org.seedstack.seed.security.RequiresPermissions;
 import org.seedstack.seed.security.RequiresRoles;
+import org.seedstack.seed.security.internal.authorization.RequiresCRUDInterceptor;
 import org.seedstack.seed.security.internal.authorization.RequiresPermissionsInterceptor;
-import org.seedstack.seed.security.internal.authorization.RequiresRestInterceptor;
 import org.seedstack.seed.security.internal.authorization.RequiresRolesInterceptor;
+import org.seedstack.seed.security.spi.CRUDActionResolver;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.google.inject.matcher.Matchers;
 
 class SecurityAopModule extends AbstractModule {
+
+  private Injector injector;
+  private Set<CRUDActionResolver> crudActionResolvers;
+
+  SecurityAopModule(final Collection<Class<? extends CRUDActionResolver>> crudActionResolverClasses) {
+    injector = Guice.createInjector(new CRUDResolverModule(crudActionResolverClasses));
+
+    crudActionResolvers = crudActionResolverClasses.stream().map(injector::getInstance)
+        .collect(Collectors.toSet());
+  }
+
   @Override
   protected void configure() {
     bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresRoles.class), new RequiresRolesInterceptor());
-    bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresPermissions.class), new RequiresPermissionsInterceptor());
-    bindRestInterceptor();
+    bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresPermissions.class),new RequiresPermissionsInterceptor());
+  
+    bindCRUDInterceptor();
   }
 
-  private void bindRestInterceptor() {
-    RequiresRestInterceptor requiresRestInterceptor = new RequiresRestInterceptor();
-    // Allows a single annotation at class level, or single annotations on each method
-    bindInterceptor(Matchers.annotatedWith(RequiresCRUD.class), Matchers.any(), requiresRestInterceptor);
-    bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresCRUD.class), requiresRestInterceptor);
+  private void bindCRUDInterceptor() {
+    RequiresCRUDInterceptor requiresCRUDInterceptor = new RequiresCRUDInterceptor(
+        crudActionResolvers);
+    // Allows a single annotation at class level, or multiple annotations / one per method
+    bindInterceptor(Matchers.annotatedWith(RequiresCRUD.class), Matchers.any(),requiresCRUDInterceptor);
+    bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresCRUD.class),requiresCRUDInterceptor);
+  }
+
+  private class CRUDResolverModule extends AbstractModule {
+
+    private final Collection<Class<? extends CRUDActionResolver>> crudActionResolversClasses;
+    public CRUDResolverModule(Collection<Class<? extends CRUDActionResolver>> crudActionResolvers) {
+      crudActionResolversClasses = crudActionResolvers;
+    }
+
+    @Override
+    protected void configure() {
+      crudActionResolversClasses.stream().forEach(x->bind(x).asEagerSingleton());
+    }
+
   }
 
 }

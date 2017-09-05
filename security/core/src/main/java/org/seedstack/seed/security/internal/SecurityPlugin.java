@@ -7,10 +7,14 @@
  */
 package org.seedstack.seed.security.internal;
 
-import com.google.common.collect.Lists;
-import io.nuun.kernel.api.plugin.InitState;
-import io.nuun.kernel.api.plugin.context.InitContext;
-import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.internal.el.ELPlugin;
@@ -20,15 +24,16 @@ import org.seedstack.seed.security.RoleMapping;
 import org.seedstack.seed.security.RolePermissionResolver;
 import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.SecurityConfig;
+import org.seedstack.seed.security.spi.CRUDActionResolver;
 import org.seedstack.seed.security.spi.SecurityScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.collect.Lists;
+
+import io.nuun.kernel.api.plugin.InitState;
+import io.nuun.kernel.api.plugin.context.InitContext;
+import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 
 /**
  * This plugin provides core security infrastructure, based on Apache Shiro
@@ -41,6 +46,8 @@ public class SecurityPlugin extends AbstractSeedPlugin {
     private final Set<SecurityProvider> securityProviders = new HashSet<>();
     private SecurityConfigurer securityConfigurer;
     private boolean elAvailable;
+
+    private Collection<Class<? extends CRUDActionResolver>> crudActionResolvers;
 
     @Override
     public String name() {
@@ -59,7 +66,9 @@ public class SecurityPlugin extends AbstractSeedPlugin {
                 .descendentTypeOf(RoleMapping.class)
                 .descendentTypeOf(RolePermissionResolver.class)
                 .descendentTypeOf(Scope.class)
-                .descendentTypeOf(PrincipalCustomizer.class).build();
+                .descendentTypeOf(PrincipalCustomizer.class)
+                .descendentTypeOf(CRUDActionResolver.class)
+                .build();
     }
 
     @Override
@@ -69,9 +78,10 @@ public class SecurityPlugin extends AbstractSeedPlugin {
         Map<Class<?>, Collection<Class<?>>> scannedClasses = initContext.scannedSubTypesByAncestorClass();
 
         configureScopes(scannedClasses.get(Scope.class));
-
+        configureCrudActionResolvers(scannedClasses.get(CRUDActionResolver.class));
+        
         securityProviders.addAll(initContext.dependencies(SecurityProvider.class));
-
+        
         elAvailable = initContext.dependency(ELPlugin.class).isFunctionMappingAvailable();
 
         Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses = (Collection) scannedClasses.get(PrincipalCustomizer.class);
@@ -80,6 +90,19 @@ public class SecurityPlugin extends AbstractSeedPlugin {
         return InitState.INITIALIZED;
     }
 
+
+  @SuppressWarnings("unchecked")
+  //Cast collection of undefined class to collection of class that extends CRUDActionResolver
+  private void configureCrudActionResolvers(Collection<Class<?>> resolvers) {
+    //If there's no resolver, a warning may come handy in place
+    if(resolvers == null) {
+     resolvers = Collections.emptySet(); 
+    }else {
+    crudActionResolvers = resolvers.stream()
+        .map(x -> (Class<? extends CRUDActionResolver>) x)
+        .collect(Collectors.toSet());
+    }
+  }
 
     @SuppressWarnings("unchecked")
     private void configureScopes(Collection<Class<?>> scopeClasses) {
@@ -122,7 +145,8 @@ public class SecurityPlugin extends AbstractSeedPlugin {
                 securityConfigurer,
                 scopeClasses,
                 elAvailable,
-                securityProviders
+                securityProviders,
+                crudActionResolvers
         );
     }
 }

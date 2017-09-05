@@ -13,11 +13,13 @@ import org.mockito.internal.util.reflection.Whitebox;
 
 import static org.mockito.Mockito.mock;
 
+import java.util.Collections;
+
 public class SecurityAopModuleUniTest {
 
 	@Test
 	public void testModule(){
-		SecurityAopModule underTest = new SecurityAopModule();
+		SecurityAopModule underTest = new SecurityAopModule(Collections.emptySet());
 		Binder b = mock(Binder.class);
 		Whitebox.setInternalState(underTest, "binder", b);
 		

@@ -21,13 +21,6 @@ import org.seedstack.seed.security.RequiresRoles;
  */
 public class RequiresRolesInterceptor extends AbstractInterceptor implements MethodInterceptor {
 
-  /**
-   * Constructor
-   * 
-   */
-  public RequiresRolesInterceptor() {
-  }
-
   @Override
   public Object invoke(MethodInvocation invocation) throws Throwable {
     Annotation annotation = findAnnotation(invocation);

@@ -7,56 +7,40 @@
  */
 package org.seedstack.seed.security.internal.fixtures;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-
 import org.seedstack.seed.security.RequiresCRUD;
+import org.seedstack.seed.security.internal.fixtures.annotations.CREATE;
+import org.seedstack.seed.security.internal.fixtures.annotations.DELETE;
+import org.seedstack.seed.security.internal.fixtures.annotations.READ;
+import org.seedstack.seed.security.internal.fixtures.annotations.UPDATE;
 
 public class AnnotatedRestMethods4Security {
 
   @DELETE
-  @RequiresCRUD("rest")
-  public boolean restDelete() {
+  @RequiresCRUD("crudTest")
+  public boolean delete() {
     return true;
   }
 
-  @GET
-  @RequiresCRUD("rest")
-  public boolean restGet() {
+  @READ
+  @RequiresCRUD("crudTest")
+  public boolean read() {
     return true;
   }
 
-  @HEAD
-  @RequiresCRUD("rest")
-  public boolean restHead() {
+  @UPDATE
+  @RequiresCRUD("crudTest")
+  public boolean update() {
     return true;
   }
 
-  @OPTIONS
-  @RequiresCRUD("rest")
-  public boolean restOptions() {
-    return true;
-  }
-
-  @POST
-  @RequiresCRUD("rest")
-  public boolean restPost() {
-    return true;
-  }
-
-  @PUT
-  @RequiresCRUD("rest")
-  public boolean restPut() {
+  @CREATE
+  @RequiresCRUD("crudTest")
+  public boolean create() {
     return true;
   }
 
   // Empty
-  @RequiresCRUD("rest")
-  public boolean restEmpty() {
+  public boolean none() {
     return true;
   }
 

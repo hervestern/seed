@@ -7,50 +7,37 @@
  */
 package org.seedstack.seed.security.internal.fixtures;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-
 import org.seedstack.seed.security.RequiresCRUD;
+import org.seedstack.seed.security.internal.fixtures.annotations.CREATE;
+import org.seedstack.seed.security.internal.fixtures.annotations.DELETE;
+import org.seedstack.seed.security.internal.fixtures.annotations.READ;
+import org.seedstack.seed.security.internal.fixtures.annotations.UPDATE;
 
-@RequiresCRUD("rest")
+@RequiresCRUD("crudTest")
 public class AnnotatedRestClass4Security {
 
   @DELETE
-  public boolean restDelete() {
+  public boolean delete() {
     return true;
   }
 
-  @GET
-  public boolean restGet() {
+  @READ
+  public boolean read() {
     return true;
   }
 
-  @HEAD
-  public boolean restHead() {
+  @UPDATE
+  public boolean update() {
     return true;
   }
 
-  @OPTIONS
-  public boolean restOptions() {
-    return true;
-  }
-
-  @POST
-  public boolean restPost() {
-    return true;
-  }
-
-  @PUT
-  public boolean restPut() {
+  @CREATE
+  public boolean create() {
     return true;
   }
 
   // Empty
-  public boolean restEmpty() {
+  public boolean none() {
     return true;
   }
 

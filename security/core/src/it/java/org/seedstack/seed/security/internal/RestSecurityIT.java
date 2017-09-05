@@ -44,9 +44,9 @@ public class RestSecurityIT {
   @Test
   @WithUser(id = "Obiwan", password = "yodarulez")
   public void Obiwan_should_not_be_able_to_interpret_anything() {
-    assertThatThrownBy(() -> annotatedClass.restGet())
+    assertThatThrownBy(() -> annotatedClass.read())
         .isInstanceOf(AuthorizationException.class);
-    assertThatThrownBy(() -> annotatedMethods.restGet())
+    assertThatThrownBy(() -> annotatedMethods.read())
         .isInstanceOf(AuthorizationException.class);
 
   }
@@ -80,21 +80,15 @@ public class RestSecurityIT {
   @WithUser(id = "R2D2", password = "beep")
   public void r2d2_should_be_able_to_call_any_kind_of_method() {
 
-    assertThat(annotatedClass.restDelete()).isTrue();
-    assertThat(annotatedClass.restGet()).isTrue();
-    assertThat(annotatedClass.restHead()).isTrue();
-    assertThat(annotatedClass.restOptions()).isTrue();
-    assertThat(annotatedClass.restPost()).isTrue();
-    assertThat(annotatedClass.restPut()).isTrue();
-    assertThat(annotatedClass.restEmpty()).isTrue();
+    assertThat(annotatedClass.create()).isTrue();
+    assertThat(annotatedClass.read()).isTrue();
+    assertThat(annotatedClass.update()).isTrue();
+    assertThat(annotatedClass.delete()).isTrue();
 
-    assertThat(annotatedMethods.restDelete()).isTrue();
-    assertThat(annotatedMethods.restGet()).isTrue();
-    assertThat(annotatedMethods.restHead()).isTrue();
-    assertThat(annotatedMethods.restOptions()).isTrue();
-    assertThat(annotatedMethods.restPost()).isTrue();
-    assertThat(annotatedMethods.restPut()).isTrue();
-    assertThat(annotatedMethods.restEmpty()).isTrue();
+    assertThat(annotatedMethods.create()).isTrue();
+    assertThat(annotatedMethods.read()).isTrue();
+    assertThat(annotatedMethods.update()).isTrue();
+    assertThat(annotatedMethods.delete()).isTrue();
 
   }
 
@@ -119,22 +113,15 @@ public class RestSecurityIT {
   @WithUser(id = "C3P0", password = "ewokgod")
   public void c3p0_should_be_able_to_read_data() {
 
-    assertThatThrownBy(() -> annotatedMethods.restDelete()).isInstanceOf(AuthorizationException.class);
-    assertThatThrownBy(() -> annotatedMethods.restPost()).isInstanceOf(AuthorizationException.class);
-    assertThatThrownBy(() -> annotatedMethods.restPut()).isInstanceOf(AuthorizationException.class);
-    assertThat(annotatedMethods.restGet()).isTrue();
-    assertThat(annotatedMethods.restHead()).isTrue();
-    assertThat(annotatedMethods.restOptions()).isTrue();
-    assertThat(annotatedMethods.restEmpty()).isTrue();
-
-    assertThatThrownBy(() -> annotatedClass.restDelete()).isInstanceOf(AuthorizationException.class);
-    assertThatThrownBy(() -> annotatedClass.restPost()).isInstanceOf(AuthorizationException.class);
-    assertThatThrownBy(() -> annotatedClass.restPut()).isInstanceOf(AuthorizationException.class);
-    assertThat(annotatedClass.restGet()).isTrue();
-    assertThat(annotatedClass.restHead()).isTrue();
-    assertThat(annotatedClass.restOptions()).isTrue();
-    assertThat(annotatedClass.restEmpty()).isTrue();
-
+    assertThatThrownBy(() -> annotatedMethods.create()).isInstanceOf(AuthorizationException.class);
+    assertThatThrownBy(() -> annotatedMethods.update()).isInstanceOf(AuthorizationException.class);
+    assertThatThrownBy(() -> annotatedMethods.delete()).isInstanceOf(AuthorizationException.class);
+    assertThat(annotatedMethods.read()).isTrue();
+    
+    assertThatThrownBy(() -> annotatedClass.create()).isInstanceOf(AuthorizationException.class);
+    assertThatThrownBy(() -> annotatedClass.update()).isInstanceOf(AuthorizationException.class);
+    assertThatThrownBy(() -> annotatedClass.delete()).isInstanceOf(AuthorizationException.class);
+    assertThat(annotatedClass.read()).isTrue();
   }
 
   @Install

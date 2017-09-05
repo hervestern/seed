@@ -22,13 +22,6 @@ import org.seedstack.seed.security.RequiresPermissions;
 public class RequiresPermissionsInterceptor extends AbstractInterceptor
     implements MethodInterceptor {
 
-  /**
-   * Constructor
-   * 
-   */
-  public RequiresPermissionsInterceptor() {
-  }
-
   @Override
   public Object invoke(MethodInvocation invocation) throws Throwable {
     Annotation annotation = findAnnotation(invocation);

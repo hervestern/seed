@@ -7,6 +7,17 @@
  */
 package org.seedstack.seed.security.internal;
 
+import java.util.Collection;
+import java.util.Map;
+
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.shiro.event.EventBus;
+import org.apache.shiro.mgt.SecurityManager;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.security.Scope;
+import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionModule;
+import org.seedstack.seed.security.spi.CRUDActionResolver;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Binding;
 import com.google.inject.Key;
@@ -15,15 +26,6 @@ import com.google.inject.PrivateModule;
 import com.google.inject.spi.Element;
 import com.google.inject.spi.Elements;
 import com.google.inject.spi.PrivateElements;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.shiro.event.EventBus;
-import org.apache.shiro.mgt.SecurityManager;
-import org.seedstack.seed.SeedException;
-import org.seedstack.seed.security.Scope;
-import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionModule;
-
-import java.util.Collection;
-import java.util.Map;
 
 @SecurityConcern
 class SecurityModule extends AbstractModule {
@@ -35,18 +37,21 @@ class SecurityModule extends AbstractModule {
     private final SecurityConfigurer securityConfigurer;
     private final boolean elAvailable;
     private final Collection<SecurityProvider> securityProviders;
+    private final Collection<Class<? extends CRUDActionResolver>> securityCRUDActionResolvers;
 
-    SecurityModule(SecurityConfigurer securityConfigurer, Map<String, Class<? extends Scope>> scopeClasses, boolean elAvailable, Collection<SecurityProvider> securityProviders) {
+    SecurityModule(SecurityConfigurer securityConfigurer, Map<String, Class<? extends Scope>> scopeClasses, boolean elAvailable, Collection<SecurityProvider> securityProviders, Collection<Class<? extends CRUDActionResolver>> securityCRUDActionResolvers) {
         this.securityConfigurer = securityConfigurer;
         this.scopeClasses = scopeClasses;
         this.elAvailable = elAvailable;
         this.securityProviders = securityProviders;
+        this.securityCRUDActionResolvers = securityCRUDActionResolvers;
     }
 
     @Override
     protected void configure() {
+      
         install(new SecurityInternalModule(securityConfigurer, scopeClasses));
-        install(new SecurityAopModule());
+        install(new SecurityAopModule(securityCRUDActionResolvers));
 
         if (elAvailable) {
             install(new SecurityExpressionModule());
@@ -71,7 +76,6 @@ class SecurityModule extends AbstractModule {
                 install(removeSecurityManager(additionalSecurityModule));
             }
         }
-
         install(mainModuleToInstall);
     }
 
