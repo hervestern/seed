@@ -72,37 +72,38 @@ public class SecurityPlugin extends AbstractSeedPlugin {
     }
 
     @Override
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public InitState initialize(InitContext initContext) {
         SecurityConfig securityConfig = getConfiguration(SecurityConfig.class);
         Map<Class<?>, Collection<Class<?>>> scannedClasses = initContext.scannedSubTypesByAncestorClass();
 
         configureScopes(scannedClasses.get(Scope.class));
         configureCrudActionResolvers(scannedClasses.get(CRUDActionResolver.class));
-        
+
         securityProviders.addAll(initContext.dependencies(SecurityProvider.class));
-        
+
         elAvailable = initContext.dependency(ELPlugin.class).isFunctionMappingAvailable();
 
-        Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses = (Collection) scannedClasses.get(PrincipalCustomizer.class);
+        Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses = (Collection) scannedClasses
+                .get(PrincipalCustomizer.class);
         securityConfigurer = new SecurityConfigurer(securityConfig, scannedClasses, principalCustomizerClasses);
 
         return InitState.INITIALIZED;
     }
 
-
-  @SuppressWarnings("unchecked")
-  //Cast collection of undefined class to collection of class that extends CRUDActionResolver
-  private void configureCrudActionResolvers(Collection<Class<?>> resolvers) {
-    //If there's no resolver, a warning may come handy in place
-    if(resolvers == null) {
-     resolvers = Collections.emptySet(); 
-    }else {
-    crudActionResolvers = resolvers.stream()
-        .map(x -> (Class<? extends CRUDActionResolver>) x)
-        .collect(Collectors.toSet());
+    @SuppressWarnings("unchecked")
+    // Cast collection of undefined class to collection of class that extends
+    // CRUDActionResolver
+    private void configureCrudActionResolvers(Collection<Class<?>> resolvers) {
+        // If there's no resolver, a warning may come handy in place
+        if (resolvers == null) {
+            this.crudActionResolvers = Collections.emptySet();
+        } else {
+            crudActionResolvers = resolvers.stream()
+                    .map(x -> (Class<? extends CRUDActionResolver>) x)
+                    .collect(Collectors.toSet());
+        }
     }
-  }
 
     @SuppressWarnings("unchecked")
     private void configureScopes(Collection<Class<?>> scopeClasses) {
@@ -146,7 +147,6 @@ public class SecurityPlugin extends AbstractSeedPlugin {
                 scopeClasses,
                 elAvailable,
                 securityProviders,
-                crudActionResolvers
-        );
+                crudActionResolvers);
     }
 }
