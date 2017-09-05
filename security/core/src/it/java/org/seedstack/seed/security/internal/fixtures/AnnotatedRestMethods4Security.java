@@ -14,48 +14,48 @@ import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 
-import org.seedstack.seed.security.RequiresRest;
+import org.seedstack.seed.security.RequiresCRUD;
 
 public class AnnotatedRestMethods4Security {
 
   @DELETE
-  @RequiresRest("rest")
+  @RequiresCRUD("rest")
   public boolean restDelete() {
     return true;
   }
 
   @GET
-  @RequiresRest("rest")
+  @RequiresCRUD("rest")
   public boolean restGet() {
     return true;
   }
 
   @HEAD
-  @RequiresRest("rest")
+  @RequiresCRUD("rest")
   public boolean restHead() {
     return true;
   }
 
   @OPTIONS
-  @RequiresRest("rest")
+  @RequiresCRUD("rest")
   public boolean restOptions() {
     return true;
   }
 
   @POST
-  @RequiresRest("rest")
+  @RequiresCRUD("rest")
   public boolean restPost() {
     return true;
   }
 
   @PUT
-  @RequiresRest("rest")
+  @RequiresCRUD("rest")
   public boolean restPut() {
     return true;
   }
 
   // Empty
-  @RequiresRest("rest")
+  @RequiresCRUD("rest")
   public boolean restEmpty() {
     return true;
   }

@@ -11,7 +11,7 @@ import java.lang.annotation.Annotation;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.seedstack.seed.security.RequiresRest;
+import org.seedstack.seed.security.RequiresCRUD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,11 +44,11 @@ public class RequiresRestInterceptor extends AbstractInterceptor implements Meth
     }
     HttpAnnotationAction verb = findHttpVerb(invocation);
     if (verb.equals(HttpAnnotationAction.NONE)) {
-      logger.warn("RequiresRest filter %s%s misses verb annotation",
+      logger.warn("RequiresCRUD filter %s%s misses verb annotation",
           invocation.getThis().getClass().getName(), invocation.getMethod().getName());
       return invocation.proceed();
     }
-    RequiresRest rrAnnotation = (RequiresRest) annotation;
+    RequiresCRUD rrAnnotation = (RequiresCRUD) annotation;
     String permission = String.format("%s:%s", rrAnnotation.value(), verb.getAction());
     
     
@@ -59,7 +59,7 @@ public class RequiresRestInterceptor extends AbstractInterceptor implements Meth
   }
 
   private static Annotation findAnnotation(MethodInvocation invocation) {
-    Annotation annotation = invocation.getMethod().getAnnotation(RequiresRest.class);
+    Annotation annotation = invocation.getMethod().getAnnotation(RequiresCRUD.class);
     if (annotation == null) {
       /***
        * Annotation was not found on method, Checking class annotation <br />
@@ -67,7 +67,7 @@ public class RequiresRestInterceptor extends AbstractInterceptor implements Meth
        * {@see https://stackoverflow.com/a/13406792}
        */
       annotation = invocation.getThis().getClass().getSuperclass()
-          .getAnnotation(RequiresRest.class);
+          .getAnnotation(RequiresCRUD.class);
     }
     return annotation;
   }

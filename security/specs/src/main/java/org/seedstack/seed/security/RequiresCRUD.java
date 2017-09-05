@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RUNTIME)
 @Target({ METHOD, TYPE })
-public @interface RequiresRest {
+public @interface RequiresCRUD {
 
   /**
    * @return the permissions to check for.

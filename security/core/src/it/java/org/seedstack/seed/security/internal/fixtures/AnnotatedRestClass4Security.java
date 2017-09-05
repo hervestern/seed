@@ -14,9 +14,9 @@ import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 
-import org.seedstack.seed.security.RequiresRest;
+import org.seedstack.seed.security.RequiresCRUD;
 
-@RequiresRest("rest")
+@RequiresCRUD("rest")
 public class AnnotatedRestClass4Security {
 
   @DELETE
