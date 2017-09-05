@@ -14,7 +14,7 @@ import org.seedstack.seed.security.internal.fixtures.annotations.READ;
 import org.seedstack.seed.security.internal.fixtures.annotations.UPDATE;
 
 @RequiresCRUD("crudTest")
-public class AnnotatedRestClass4Security {
+public class AnnotatedCrudClass4Security {
 
   @DELETE
   public boolean delete() {
