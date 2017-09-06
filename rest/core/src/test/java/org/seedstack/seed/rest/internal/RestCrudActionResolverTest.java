@@ -18,7 +18,7 @@ import javax.ws.rs.PUT;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.seedstack.seed.security.CRUDAction;
+import org.seedstack.seed.security.CrudAction;
 
 public class RestCrudActionResolverTest {
 
@@ -45,12 +45,12 @@ public class RestCrudActionResolverTest {
     @Test
     public void test_that_resolves_to_the_right_verb() throws Exception {
 
-        assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("delete"))).isPresent().contains(CRUDAction.DELETE);
-        assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("get"))).isPresent().contains(CRUDAction.READ);
-        assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("head"))).isPresent().contains(CRUDAction.READ);
-        assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("options"))).isPresent().contains(CRUDAction.READ);
-        assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("post"))).isPresent().contains(CRUDAction.CREATE);
-        assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("put"))).isPresent().contains(CRUDAction.UPDATE);
+        assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("delete"))).isPresent().contains(CrudAction.DELETE);
+        assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("get"))).isPresent().contains(CrudAction.READ);
+        assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("head"))).isPresent().contains(CrudAction.READ);
+        assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("options"))).isPresent().contains(CrudAction.READ);
+        assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("post"))).isPresent().contains(CrudAction.CREATE);
+        assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("put"))).isPresent().contains(CrudAction.UPDATE);
         assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("none"))).isNotPresent();
         assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("random"))).isNotPresent();
 

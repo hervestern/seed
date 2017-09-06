@@ -15,18 +15,18 @@ import java.util.Optional;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.seedstack.seed.core.internal.guice.ProxyUtils;
-import org.seedstack.seed.security.CRUDAction;
+import org.seedstack.seed.security.CrudAction;
 import org.seedstack.seed.security.RequiresCRUD;
-import org.seedstack.seed.security.spi.CRUDActionResolver;
+import org.seedstack.seed.security.spi.CrudActionResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RequiresCRUDInterceptor extends AbstractInterceptor implements MethodInterceptor {
 
   private Logger logger = LoggerFactory.getLogger(RequiresCRUDInterceptor.class);
-  private Collection<CRUDActionResolver> resolvers;
+  private Collection<CrudActionResolver> resolvers;
 
-  public RequiresCRUDInterceptor(Collection<CRUDActionResolver> resolvers) {
+  public RequiresCRUDInterceptor(Collection<CrudActionResolver> resolvers) {
     this.resolvers = resolvers;
   }
 
@@ -38,7 +38,7 @@ public class RequiresCRUDInterceptor extends AbstractInterceptor implements Meth
       return invocation.proceed();
     }
 
-    Optional<CRUDAction> action = findVerb(invocation);
+    Optional<CrudAction> action = findVerb(invocation);
     if (!action.isPresent()) {
       logger.warn("RequiresCRUD filter %s%s misses verb annotation",
           invocation.getThis().getClass().getName(), invocation.getMethod().getName());
@@ -62,13 +62,13 @@ public class RequiresCRUDInterceptor extends AbstractInterceptor implements Meth
     return annotation;
   }
 
-  private Optional<CRUDAction> findVerb(MethodInvocation invocation) {
+  private Optional<CrudAction> findVerb(MethodInvocation invocation) {
     Method method = invocation.getMethod();
     // returns the result of the first resolver that gives a valid action
     return resolvers.stream()
         .filter(x -> x.canResolve(method))
         .map(x -> x.resolve(method))
-        .filter(Optional<CRUDAction>::isPresent)
+        .filter(Optional<CrudAction>::isPresent)
         .findFirst().orElse(Optional.empty());
   }
 

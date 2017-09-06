@@ -16,21 +16,21 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.seedstack.seed.security.CRUDAction;
-import org.seedstack.seed.security.spi.CRUDActionResolver;
+import org.seedstack.seed.security.CrudAction;
+import org.seedstack.seed.security.spi.CrudActionResolver;
 
-public class RestCrudActionResolver implements CRUDActionResolver {
+public class RestCrudActionResolver implements CrudActionResolver {
 
-    private final Map<Class<? extends Annotation>, CRUDAction> annotationMap;
+    private final Map<Class<? extends Annotation>, CrudAction> annotationMap;
 
     public RestCrudActionResolver() {
-        Map<Class<? extends Annotation>, CRUDAction> map = new HashMap<>();
-        map.put(javax.ws.rs.DELETE.class, CRUDAction.DELETE);
-        map.put(javax.ws.rs.GET.class, CRUDAction.READ);
-        map.put(javax.ws.rs.HEAD.class, CRUDAction.READ);
-        map.put(javax.ws.rs.OPTIONS.class, CRUDAction.READ);
-        map.put(javax.ws.rs.POST.class, CRUDAction.CREATE);
-        map.put(javax.ws.rs.PUT.class, CRUDAction.UPDATE);
+        Map<Class<? extends Annotation>, CrudAction> map = new HashMap<>();
+        map.put(javax.ws.rs.DELETE.class, CrudAction.DELETE);
+        map.put(javax.ws.rs.GET.class, CrudAction.READ);
+        map.put(javax.ws.rs.HEAD.class, CrudAction.READ);
+        map.put(javax.ws.rs.OPTIONS.class, CrudAction.READ);
+        map.put(javax.ws.rs.POST.class, CrudAction.CREATE);
+        map.put(javax.ws.rs.PUT.class, CrudAction.UPDATE);
         annotationMap = Collections.unmodifiableMap(map);
     }
 
@@ -43,7 +43,7 @@ public class RestCrudActionResolver implements CRUDActionResolver {
     }
 
     @Override
-    public Optional<CRUDAction> resolve(Method method) {
+    public Optional<CrudAction> resolve(Method method) {
         return Arrays.stream(method.getAnnotations())
                 .map(Annotation::annotationType)
                 .map(x -> annotationMap.getOrDefault(x, null))

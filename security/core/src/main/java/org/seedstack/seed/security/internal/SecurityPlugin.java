@@ -24,7 +24,7 @@ import org.seedstack.seed.security.RoleMapping;
 import org.seedstack.seed.security.RolePermissionResolver;
 import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.SecurityConfig;
-import org.seedstack.seed.security.spi.CRUDActionResolver;
+import org.seedstack.seed.security.spi.CrudActionResolver;
 import org.seedstack.seed.security.spi.SecurityScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ public class SecurityPlugin extends AbstractSeedPlugin {
     private SecurityConfigurer securityConfigurer;
     private boolean elAvailable;
 
-    private Collection<Class<? extends CRUDActionResolver>> crudActionResolvers;
+    private Collection<Class<? extends CrudActionResolver>> crudActionResolvers;
 
     @Override
     public String name() {
@@ -67,7 +67,7 @@ public class SecurityPlugin extends AbstractSeedPlugin {
                 .descendentTypeOf(RolePermissionResolver.class)
                 .descendentTypeOf(Scope.class)
                 .descendentTypeOf(PrincipalCustomizer.class)
-                .descendentTypeOf(CRUDActionResolver.class)
+                .descendentTypeOf(CrudActionResolver.class)
                 .build();
     }
 
@@ -78,7 +78,7 @@ public class SecurityPlugin extends AbstractSeedPlugin {
         Map<Class<?>, Collection<Class<?>>> scannedClasses = initContext.scannedSubTypesByAncestorClass();
 
         configureScopes(scannedClasses.get(Scope.class));
-        configureCrudActionResolvers(scannedClasses.get(CRUDActionResolver.class));
+        configureCrudActionResolvers(scannedClasses.get(CrudActionResolver.class));
 
         securityProviders.addAll(initContext.dependencies(SecurityProvider.class));
 
@@ -93,14 +93,14 @@ public class SecurityPlugin extends AbstractSeedPlugin {
 
     @SuppressWarnings("unchecked")
     // Cast collection of undefined class to collection of class that extends
-    // CRUDActionResolver
+    // CrudActionResolver
     private void configureCrudActionResolvers(Collection<Class<?>> resolvers) {
         // If there's no resolver, a warning may come handy in place
         if (resolvers == null) {
             this.crudActionResolvers = Collections.emptySet();
         } else {
             crudActionResolvers = resolvers.stream()
-                    .map(x -> (Class<? extends CRUDActionResolver>) x)
+                    .map(x -> (Class<? extends CrudActionResolver>) x)
                     .collect(Collectors.toSet());
         }
     }

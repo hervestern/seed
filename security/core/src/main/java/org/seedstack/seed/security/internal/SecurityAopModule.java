@@ -17,7 +17,7 @@ import org.seedstack.seed.security.RequiresRoles;
 import org.seedstack.seed.security.internal.authorization.RequiresCRUDInterceptor;
 import org.seedstack.seed.security.internal.authorization.RequiresPermissionsInterceptor;
 import org.seedstack.seed.security.internal.authorization.RequiresRolesInterceptor;
-import org.seedstack.seed.security.spi.CRUDActionResolver;
+import org.seedstack.seed.security.spi.CrudActionResolver;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -26,9 +26,9 @@ import com.google.inject.matcher.Matchers;
 
 class SecurityAopModule extends AbstractModule {
 
-    private Set<CRUDActionResolver> crudActionResolvers;
+    private Set<CrudActionResolver> crudActionResolvers;
 
-    SecurityAopModule(final Collection<Class<? extends CRUDActionResolver>> crudActionResolverClasses) {
+    SecurityAopModule(final Collection<Class<? extends CrudActionResolver>> crudActionResolverClasses) {
         Injector injector = Guice.createInjector(new CRUDResolverModule(crudActionResolverClasses));
 
         crudActionResolvers = crudActionResolverClasses
@@ -54,14 +54,14 @@ class SecurityAopModule extends AbstractModule {
     }
 
     /**
-     * Private Internal module that binds every CRUDActionResolver received, so it
+     * Private Internal module that binds every CrudActionResolver received, so it
      * can be created trough Injector on its base package
      */
     private static class CRUDResolverModule extends AbstractModule {
 
-        private final Collection<Class<? extends CRUDActionResolver>> crudActionResolversClasses;
+        private final Collection<Class<? extends CrudActionResolver>> crudActionResolversClasses;
 
-        public CRUDResolverModule(Collection<Class<? extends CRUDActionResolver>> crudActionResolvers) {
+        public CRUDResolverModule(Collection<Class<? extends CrudActionResolver>> crudActionResolvers) {
             crudActionResolversClasses = crudActionResolvers;
         }
 

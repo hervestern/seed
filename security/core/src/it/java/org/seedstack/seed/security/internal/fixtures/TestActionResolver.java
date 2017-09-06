@@ -10,14 +10,14 @@ package org.seedstack.seed.security.internal.fixtures;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import org.seedstack.seed.security.CRUDAction;
+import org.seedstack.seed.security.CrudAction;
 import org.seedstack.seed.security.internal.fixtures.annotations.CREATE;
 import org.seedstack.seed.security.internal.fixtures.annotations.DELETE;
 import org.seedstack.seed.security.internal.fixtures.annotations.READ;
 import org.seedstack.seed.security.internal.fixtures.annotations.UPDATE;
-import org.seedstack.seed.security.spi.CRUDActionResolver;
+import org.seedstack.seed.security.spi.CrudActionResolver;
 
-public class TestActionResolver implements CRUDActionResolver {
+public class TestActionResolver implements CrudActionResolver {
 
     @Override
     public boolean canResolve(Method method) {
@@ -25,20 +25,20 @@ public class TestActionResolver implements CRUDActionResolver {
     }
 
     @Override
-    public Optional<CRUDAction> resolve(Method method) {
+    public Optional<CrudAction> resolve(Method method) {
 
         if (method.getAnnotation(CREATE.class) != null) {
-            return Optional.of(CRUDAction.CREATE);
+            return Optional.of(CrudAction.CREATE);
         }
 
         if (method.getAnnotation(READ.class) != null) {
-            return Optional.of(CRUDAction.READ);
+            return Optional.of(CrudAction.READ);
         }
         if (method.getAnnotation(UPDATE.class) != null) {
-            return Optional.of(CRUDAction.UPDATE);
+            return Optional.of(CrudAction.UPDATE);
         }
         if (method.getAnnotation(DELETE.class) != null) {
-            return Optional.of(CRUDAction.DELETE);
+            return Optional.of(CrudAction.DELETE);
         }
         return Optional.empty();
 

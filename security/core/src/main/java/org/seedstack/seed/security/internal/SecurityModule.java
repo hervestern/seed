@@ -16,7 +16,7 @@ import org.apache.shiro.mgt.SecurityManager;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.internal.securityexpr.SecurityExpressionModule;
-import org.seedstack.seed.security.spi.CRUDActionResolver;
+import org.seedstack.seed.security.spi.CrudActionResolver;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Binding;
@@ -37,9 +37,9 @@ class SecurityModule extends AbstractModule {
     private final SecurityConfigurer securityConfigurer;
     private final boolean elAvailable;
     private final Collection<SecurityProvider> securityProviders;
-    private final Collection<Class<? extends CRUDActionResolver>> securityCRUDActionResolvers;
+    private final Collection<Class<? extends CrudActionResolver>> securityCRUDActionResolvers;
 
-    SecurityModule(SecurityConfigurer securityConfigurer, Map<String, Class<? extends Scope>> scopeClasses, boolean elAvailable, Collection<SecurityProvider> securityProviders, Collection<Class<? extends CRUDActionResolver>> securityCRUDActionResolvers) {
+    SecurityModule(SecurityConfigurer securityConfigurer, Map<String, Class<? extends Scope>> scopeClasses, boolean elAvailable, Collection<SecurityProvider> securityProviders, Collection<Class<? extends CrudActionResolver>> securityCRUDActionResolvers) {
         this.securityConfigurer = securityConfigurer;
         this.scopeClasses = scopeClasses;
         this.elAvailable = elAvailable;

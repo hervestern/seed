@@ -10,25 +10,25 @@ package org.seedstack.seed.security.spi;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import org.seedstack.seed.security.CRUDAction;
+import org.seedstack.seed.security.CrudAction;
 
-public interface CRUDActionResolver {
+public interface CrudActionResolver {
   /**
-   * Checks if the resolver is able to resolve a {@link CRUDAction} from the specified method
+   * Checks if the resolver is able to resolve a {@link CrudAction} from the specified method
    * object.
    *
    * @param method
    *          the method object.
-   * @return true if it is able to resolve a {@link CRUDAction}, false otherwise.
+   * @return true if it is able to resolve a {@link CrudAction}, false otherwise.
    */
   boolean canResolve(Method method);
 
   /**
-   * Resolves a {@link CRUDAction} from the specified method object.
+   * Resolves a {@link CrudAction} from the specified method object.
    *
    * @param method
    *          the method object.
-   * @return an optionally resolved {@link CRUDAction}.
+   * @return an optionally resolved {@link CrudAction}.
    */
-  Optional<CRUDAction> resolve(Method method);
+  Optional<CrudAction> resolve(Method method);
 }
