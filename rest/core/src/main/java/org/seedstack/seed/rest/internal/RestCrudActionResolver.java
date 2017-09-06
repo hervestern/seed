@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package org.seedstack.seed.rest.internal;
 
 import java.lang.annotation.Annotation;
@@ -29,17 +36,16 @@ public class RestCrudActionResolver implements CRUDActionResolver {
 
     @Override
     public boolean canResolve(Method method) {
-
         // Check if any of the annotations is a JAXRS protocol specifier
         return Arrays.stream(method.getAnnotations())
-                .map(Annotation::getClass)
+                .map(Annotation::annotationType)
                 .anyMatch(annotationMap::containsKey);
     }
 
     @Override
     public Optional<CRUDAction> resolve(Method method) {
         return Arrays.stream(method.getAnnotations())
-                .map(Annotation::getClass)
+                .map(Annotation::annotationType)
                 .map(x -> annotationMap.getOrDefault(x, null))
                 .filter(Objects::nonNull)
                 .findFirst();
