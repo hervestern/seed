@@ -5,9 +5,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/**
- * 
- */
 package org.seedstack.seed.security.internal.fixtures;
 
 import java.lang.reflect.Method;
@@ -22,34 +19,29 @@ import org.seedstack.seed.security.spi.CRUDActionResolver;
 
 public class TestActionResolver implements CRUDActionResolver {
 
-  @Override
-  public boolean canResolve(Method method) {
-    return true;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.seedstack.seed.security.spi.CRUDActionResolver#resolve(java.lang.reflect.Method)
-   */
-  @Override
-  public Optional<CRUDAction> resolve(Method method) {
-
-    if (method.getAnnotation(CREATE.class) != null) {
-      return Optional.of(CRUDAction.CREATE);
+    @Override
+    public boolean canResolve(Method method) {
+        return true;
     }
 
-    if (method.getAnnotation(READ.class) != null) {
-      return Optional.of(CRUDAction.READ);
-    }
-    if (method.getAnnotation(UPDATE.class) != null) {
-      return Optional.of(CRUDAction.UPDATE);
-    }
-    if (method.getAnnotation(DELETE.class) != null) {
-      return Optional.of(CRUDAction.DELETE);
-    }
-    return Optional.empty();
+    @Override
+    public Optional<CRUDAction> resolve(Method method) {
 
-  }
+        if (method.getAnnotation(CREATE.class) != null) {
+            return Optional.of(CRUDAction.CREATE);
+        }
+
+        if (method.getAnnotation(READ.class) != null) {
+            return Optional.of(CRUDAction.READ);
+        }
+        if (method.getAnnotation(UPDATE.class) != null) {
+            return Optional.of(CRUDAction.UPDATE);
+        }
+        if (method.getAnnotation(DELETE.class) != null) {
+            return Optional.of(CRUDAction.DELETE);
+        }
+        return Optional.empty();
+
+    }
 
 }

@@ -5,9 +5,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/**
- * 
- */
 package org.seedstack.seed.security.internal.shiro;
 
 import org.apache.shiro.SecurityUtils;
@@ -22,6 +19,7 @@ import org.junit.AfterClass;
 /**
  * Abstract test case enabling Shiro in test environments.
  */
+//TODO:find a suitable package for this helper class provided by shiro
 public abstract class AbstractShiroTest {
 
   private static ThreadState subjectThreadState;

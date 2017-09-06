@@ -25,10 +25,6 @@ import org.seedstack.seed.security.internal.fixtures.AnnotatedCrudMethods4Securi
 
 import com.google.inject.AbstractModule;
 
-/**
- * @author xiabou
- *
- */
 @RunWith(SeedITRunner.class)
 public class CrudSecurityIT {
 
