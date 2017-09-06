@@ -13,7 +13,7 @@ import org.seedstack.seed.security.internal.fixtures.annotations.DELETE;
 import org.seedstack.seed.security.internal.fixtures.annotations.READ;
 import org.seedstack.seed.security.internal.fixtures.annotations.UPDATE;
 
-public class AnnotatedRestMethods4Security {
+public class AnnotatedCrudMethods4Security {
 
   @DELETE
   @RequiresCRUD("crudTest")
