@@ -7,41 +7,43 @@
  */
 package org.seedstack.seed.security.internal.fixtures;
 
-import org.seedstack.seed.security.RequiresCRUD;
+import org.seedstack.seed.it.ITBind;
+import org.seedstack.seed.security.RequiresCrud;
 import org.seedstack.seed.security.internal.fixtures.annotations.CREATE;
 import org.seedstack.seed.security.internal.fixtures.annotations.DELETE;
 import org.seedstack.seed.security.internal.fixtures.annotations.READ;
 import org.seedstack.seed.security.internal.fixtures.annotations.UPDATE;
 
+@ITBind
 public class AnnotatedCrudMethods4Security {
 
-  @DELETE
-  @RequiresCRUD("crudTest")
-  public boolean delete() {
-    return true;
-  }
+    @DELETE
+    @RequiresCrud("crudTest")
+    public boolean delete() {
+        return true;
+    }
 
-  @READ
-  @RequiresCRUD("crudTest")
-  public boolean read() {
-    return true;
-  }
+    @READ
+    @RequiresCrud("crudTest")
+    public boolean read() {
+        return true;
+    }
 
-  @UPDATE
-  @RequiresCRUD("crudTest")
-  public boolean update() {
-    return true;
-  }
+    @UPDATE
+    @RequiresCrud("crudTest")
+    public boolean update() {
+        return true;
+    }
 
-  @CREATE
-  @RequiresCRUD("crudTest")
-  public boolean create() {
-    return true;
-  }
+    @CREATE
+    @RequiresCrud("crudTest")
+    public boolean create() {
+        return true;
+    }
 
-  // Empty
-  public boolean none() {
-    return true;
-  }
+    // Empty
+    public boolean none() {
+        return true;
+    }
 
 }

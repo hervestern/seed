@@ -7,69 +7,44 @@
  */
 package org.seedstack.seed.security.internal;
 
-import java.util.Collection;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.seedstack.seed.security.RequiresCRUD;
+import com.google.inject.AbstractModule;
+import com.google.inject.matcher.Matchers;
+import com.google.inject.multibindings.Multibinder;
+import org.seedstack.seed.security.RequiresCrud;
 import org.seedstack.seed.security.RequiresPermissions;
 import org.seedstack.seed.security.RequiresRoles;
-import org.seedstack.seed.security.internal.authorization.RequiresCRUDInterceptor;
+import org.seedstack.seed.security.internal.authorization.RequiresCrudInterceptor;
 import org.seedstack.seed.security.internal.authorization.RequiresPermissionsInterceptor;
 import org.seedstack.seed.security.internal.authorization.RequiresRolesInterceptor;
 import org.seedstack.seed.security.spi.CrudActionResolver;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.matcher.Matchers;
+import java.util.Collection;
 
 class SecurityAopModule extends AbstractModule {
-
-    private Set<CrudActionResolver> crudActionResolvers;
+    private final Collection<Class<? extends CrudActionResolver>> crudActionResolverClasses;
 
     SecurityAopModule(final Collection<Class<? extends CrudActionResolver>> crudActionResolverClasses) {
-        Injector injector = Guice.createInjector(new CRUDResolverModule(crudActionResolverClasses));
-
-        crudActionResolvers = crudActionResolverClasses
-                .stream()
-                .map(injector::getInstance)
-                .collect(Collectors.toSet());
+        this.crudActionResolverClasses = crudActionResolverClasses;
     }
 
     @Override
     protected void configure() {
         bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresRoles.class), new RequiresRolesInterceptor());
-        bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresPermissions.class),new RequiresPermissionsInterceptor());
-
-        bindCRUDInterceptor();
+        bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresPermissions.class), new RequiresPermissionsInterceptor());
+        bindCrudInterceptor();
     }
 
-    private void bindCRUDInterceptor() {
-        RequiresCRUDInterceptor requiresCRUDInterceptor = new RequiresCRUDInterceptor(
-                crudActionResolvers);
+    private void bindCrudInterceptor() {
+        Multibinder<CrudActionResolver> crudActionResolverMultibinder = Multibinder.newSetBinder(binder(), CrudActionResolver.class);
+        for (Class<? extends CrudActionResolver> crudActionResolverClass : crudActionResolverClasses) {
+            crudActionResolverMultibinder.addBinding().to(crudActionResolverClass);
+        }
+
+        RequiresCrudInterceptor requiresCrudInterceptor = new RequiresCrudInterceptor();
+        requestInjection(requiresCrudInterceptor);
+
         // Allows a single annotation at class level, or multiple annotations / one per method
-        bindInterceptor(Matchers.annotatedWith(RequiresCRUD.class), Matchers.any(), requiresCRUDInterceptor);
-        bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresCRUD.class), requiresCRUDInterceptor);
+        bindInterceptor(Matchers.annotatedWith(RequiresCrud.class), Matchers.any(), requiresCrudInterceptor);
+        bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresCrud.class), requiresCrudInterceptor);
     }
-
-    /**
-     * Private Internal module that binds every CrudActionResolver received, so it
-     * can be created trough Injector on its base package
-     */
-    private static class CRUDResolverModule extends AbstractModule {
-
-        private final Collection<Class<? extends CrudActionResolver>> crudActionResolversClasses;
-
-        public CRUDResolverModule(Collection<Class<? extends CrudActionResolver>> crudActionResolvers) {
-            crudActionResolversClasses = crudActionResolvers;
-        }
-
-        @Override
-        protected void configure() {
-            crudActionResolversClasses.stream().forEach(x -> bind(x).asEagerSingleton());
-        }
-
-    }
-
 }

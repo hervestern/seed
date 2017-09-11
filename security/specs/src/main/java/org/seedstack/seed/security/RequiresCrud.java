@@ -7,26 +7,24 @@
  */
 package org.seedstack.seed.security;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 
 
 /**
  * Annotation that marks rest classes and methods which should be intercepted and checked for subject role ownership using the rest filter.
  */
 @Retention(RUNTIME)
-@Target({ METHOD, TYPE })
-public @interface RequiresCRUD {
+@Target({METHOD, TYPE})
+public @interface RequiresCrud {
 
-  /**
-   * @return the permissions to check for.
-   */
-  String value();
+    /**
+     * @return the permissions to check for.
+     */
+    String value();
 
-  
-  
 }

@@ -7,15 +7,9 @@
  */
 package org.seedstack.seed.security.internal;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import javax.inject.Inject;
-
 import org.apache.shiro.SecurityUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.seedstack.seed.Install;
 import org.seedstack.seed.it.SeedITRunner;
 import org.seedstack.seed.security.AuthorizationException;
 import org.seedstack.seed.security.SecuritySupport;
@@ -23,7 +17,10 @@ import org.seedstack.seed.security.WithUser;
 import org.seedstack.seed.security.internal.fixtures.AnnotatedCrudClass4Security;
 import org.seedstack.seed.security.internal.fixtures.AnnotatedCrudMethods4Security;
 
-import com.google.inject.AbstractModule;
+import javax.inject.Inject;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @RunWith(SeedITRunner.class)
 public class CrudSecurityIT {
@@ -117,16 +114,4 @@ public class CrudSecurityIT {
         assertThatThrownBy(() -> annotatedClass.delete()).isInstanceOf(AuthorizationException.class);
         assertThat(annotatedClass.read()).isTrue();
     }
-
-    @Install
-    public static class SecurityTestModule extends AbstractModule {
-
-        @Override
-        protected void configure() {
-            bind(AnnotatedCrudClass4Security.class);
-            bind(AnnotatedCrudMethods4Security.class);
-        }
-
-    }
-
 }

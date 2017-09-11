@@ -7,14 +7,10 @@
  */
 package org.seedstack.seed.security.internal;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.google.common.collect.Lists;
+import io.nuun.kernel.api.plugin.InitState;
+import io.nuun.kernel.api.plugin.context.InitContext;
+import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.internal.el.ELPlugin;
@@ -26,28 +22,28 @@ import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.spi.CrudActionResolver;
 import org.seedstack.seed.security.spi.SecurityScope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.seedstack.shed.misc.PriorityUtils;
 
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import io.nuun.kernel.api.plugin.InitState;
-import io.nuun.kernel.api.plugin.context.InitContext;
-import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
 
 /**
  * This plugin provides core security infrastructure, based on Apache Shiro
  * implementation.
  */
 public class SecurityPlugin extends AbstractSeedPlugin {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityPlugin.class);
-
     private final Map<String, Class<? extends Scope>> scopeClasses = new HashMap<>();
     private final Set<SecurityProvider> securityProviders = new HashSet<>();
+    private final List<Class<? extends CrudActionResolver>> crudActionResolvers = new ArrayList<>();
     private SecurityConfigurer securityConfigurer;
     private boolean elAvailable;
-
-    private Collection<Class<? extends CrudActionResolver>> crudActionResolvers;
 
     @Override
     public String name() {
@@ -72,7 +68,7 @@ public class SecurityPlugin extends AbstractSeedPlugin {
     }
 
     @Override
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public InitState initialize(InitContext initContext) {
         SecurityConfig securityConfig = getConfiguration(SecurityConfig.class);
         Map<Class<?>, Collection<Class<?>>> scannedClasses = initContext.scannedSubTypesByAncestorClass();
@@ -84,25 +80,17 @@ public class SecurityPlugin extends AbstractSeedPlugin {
 
         elAvailable = initContext.dependency(ELPlugin.class).isFunctionMappingAvailable();
 
-        Collection<Class<? extends PrincipalCustomizer<?>>> principalCustomizerClasses = (Collection) scannedClasses
-                .get(PrincipalCustomizer.class);
-        securityConfigurer = new SecurityConfigurer(securityConfig, scannedClasses, principalCustomizerClasses);
+        securityConfigurer = new SecurityConfigurer(securityConfig, scannedClasses, (Collection) scannedClasses.get(PrincipalCustomizer.class));
 
         return InitState.INITIALIZED;
     }
 
     @SuppressWarnings("unchecked")
-    // Cast collection of undefined class to collection of class that extends
-    // CrudActionResolver
     private void configureCrudActionResolvers(Collection<Class<?>> resolvers) {
-        // If there's no resolver, a warning may come handy in place
-        if (resolvers == null) {
-            this.crudActionResolvers = Collections.emptySet();
-        } else {
-            crudActionResolvers = resolvers.stream()
-                    .map(x -> (Class<? extends CrudActionResolver>) x)
-                    .collect(Collectors.toSet());
-        }
+        resolvers.stream()
+                .map(x -> (Class<? extends CrudActionResolver>) x)
+                .forEach(crudActionResolvers::add);
+        sortByPriority(crudActionResolvers, PriorityUtils::priorityOfClassOf);
     }
 
     @SuppressWarnings("unchecked")

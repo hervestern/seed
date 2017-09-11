@@ -8,20 +8,18 @@
 package org.seedstack.seed.security;
 
 /***
- * 
- * Posible CRUD actions that will be taken into account for CRUD interceptors
- *
+ * Possible CRUD actions that will be taken into account for CRUD interceptors
  */
 public enum CrudAction {
-  CREATE("create"), UPDATE("update"), READ("read"), DELETE("delete");
+    CREATE("create"), UPDATE("update"), READ("read"), DELETE("delete");
 
-  private String verb;
+    private String verb;
 
-  CrudAction(String verb) {
-    this.verb = verb;
-  }
+    CrudAction(String verb) {
+        this.verb = verb;
+    }
 
-  public String getVerb() {
-    return this.verb;
-  }
+    public String getVerb() {
+        return this.verb;
+    }
 }
