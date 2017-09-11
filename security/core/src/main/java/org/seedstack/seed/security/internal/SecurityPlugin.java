@@ -87,6 +87,10 @@ public class SecurityPlugin extends AbstractSeedPlugin {
 
     @SuppressWarnings("unchecked")
     private void configureCrudActionResolvers(Collection<Class<?>> resolvers) {
+        if(resolvers==null) {
+            //No resolvers configured on the system, skipping crudActionResolver configuration
+            return;
+        }
         resolvers.stream()
                 .map(x -> (Class<? extends CrudActionResolver>) x)
                 .forEach(crudActionResolvers::add);
