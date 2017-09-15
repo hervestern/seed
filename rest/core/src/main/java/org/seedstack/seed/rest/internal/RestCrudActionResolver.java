@@ -7,6 +7,9 @@
  */
 package org.seedstack.seed.rest.internal;
 
+import org.seedstack.seed.security.CrudAction;
+import org.seedstack.seed.security.spi.CrudActionResolver;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -16,14 +19,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.seedstack.seed.security.CrudAction;
-import org.seedstack.seed.security.spi.CrudActionResolver;
-
-public class RestCrudActionResolver implements CrudActionResolver {
-
+class RestCrudActionResolver implements CrudActionResolver {
     private final Map<Class<? extends Annotation>, CrudAction> annotationMap;
 
-    public RestCrudActionResolver() {
+    RestCrudActionResolver() {
         Map<Class<? extends Annotation>, CrudAction> map = new HashMap<>();
         map.put(javax.ws.rs.DELETE.class, CrudAction.DELETE);
         map.put(javax.ws.rs.GET.class, CrudAction.READ);
@@ -32,14 +31,6 @@ public class RestCrudActionResolver implements CrudActionResolver {
         map.put(javax.ws.rs.POST.class, CrudAction.CREATE);
         map.put(javax.ws.rs.PUT.class, CrudAction.UPDATE);
         annotationMap = Collections.unmodifiableMap(map);
-    }
-
-    @Override
-    public boolean canResolve(Method method) {
-        // Check if any of the annotations is a JAXRS protocol specifier
-        return Arrays.stream(method.getAnnotations())
-                .map(Annotation::annotationType)
-                .anyMatch(annotationMap::containsKey);
     }
 
     @Override

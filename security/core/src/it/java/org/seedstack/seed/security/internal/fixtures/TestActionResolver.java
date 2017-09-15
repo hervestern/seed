@@ -7,9 +7,6 @@
  */
 package org.seedstack.seed.security.internal.fixtures;
 
-import java.lang.reflect.Method;
-import java.util.Optional;
-
 import org.seedstack.seed.security.CrudAction;
 import org.seedstack.seed.security.internal.fixtures.annotations.CREATE;
 import org.seedstack.seed.security.internal.fixtures.annotations.DELETE;
@@ -17,13 +14,10 @@ import org.seedstack.seed.security.internal.fixtures.annotations.READ;
 import org.seedstack.seed.security.internal.fixtures.annotations.UPDATE;
 import org.seedstack.seed.security.spi.CrudActionResolver;
 
+import java.lang.reflect.Method;
+import java.util.Optional;
+
 public class TestActionResolver implements CrudActionResolver {
-
-    @Override
-    public boolean canResolve(Method method) {
-        return true;
-    }
-
     @Override
     public Optional<CrudAction> resolve(Method method) {
 
@@ -41,7 +35,5 @@ public class TestActionResolver implements CrudActionResolver {
             return Optional.of(CrudAction.DELETE);
         }
         return Optional.empty();
-
     }
-
 }

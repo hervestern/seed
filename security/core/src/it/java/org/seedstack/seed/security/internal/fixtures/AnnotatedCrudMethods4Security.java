@@ -8,7 +8,7 @@
 package org.seedstack.seed.security.internal.fixtures;
 
 import org.seedstack.seed.it.ITBind;
-import org.seedstack.seed.security.RequiresCrud;
+import org.seedstack.seed.security.RequiresCrudPermissions;
 import org.seedstack.seed.security.internal.fixtures.annotations.CREATE;
 import org.seedstack.seed.security.internal.fixtures.annotations.DELETE;
 import org.seedstack.seed.security.internal.fixtures.annotations.READ;
@@ -18,25 +18,25 @@ import org.seedstack.seed.security.internal.fixtures.annotations.UPDATE;
 public class AnnotatedCrudMethods4Security {
 
     @DELETE
-    @RequiresCrud("crudTest")
+    @RequiresCrudPermissions("crudTest")
     public boolean delete() {
         return true;
     }
 
     @READ
-    @RequiresCrud("crudTest")
+    @RequiresCrudPermissions("crudTest")
     public boolean read() {
         return true;
     }
 
     @UPDATE
-    @RequiresCrud("crudTest")
+    @RequiresCrudPermissions("crudTest")
     public boolean update() {
         return true;
     }
 
     @CREATE
-    @RequiresCrud("crudTest")
+    @RequiresCrudPermissions("crudTest")
     public boolean create() {
         return true;
     }

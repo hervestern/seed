@@ -21,13 +21,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface RequiresPermissions {
     /**
-     * @return the list of permissions to check for.
+     * @return the permissions to check for.
      */
-	String[] value();
+    String[] value();
 
     /**
      * @return the logical operator to use between multiple permissions.
      */
-	Logical logical() default Logical.AND;
+    Logical logical() default Logical.AND;
 
 }

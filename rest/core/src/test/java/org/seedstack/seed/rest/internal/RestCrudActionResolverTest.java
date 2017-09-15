@@ -7,7 +7,9 @@
  */
 package org.seedstack.seed.rest.internal;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Before;
+import org.junit.Test;
+import org.seedstack.seed.security.CrudAction;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -16,35 +18,18 @@ import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.seedstack.seed.security.CrudAction;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class RestCrudActionResolverTest {
-
     private RestCrudActionResolver resolverUnderTest;
 
     @Before
     public void setup() throws Exception {
         resolverUnderTest = new RestCrudActionResolver();
-
-    }
-
-    @Test
-    public void test_that_only_intercepts_rest_annotations() throws Exception {
-        assertThat(resolverUnderTest.canResolve(Fixture.class.getMethod("delete"))).isTrue();
-        assertThat(resolverUnderTest.canResolve(Fixture.class.getMethod("get"))).isTrue();
-        assertThat(resolverUnderTest.canResolve(Fixture.class.getMethod("head"))).isTrue();
-        assertThat(resolverUnderTest.canResolve(Fixture.class.getMethod("options"))).isTrue();
-        assertThat(resolverUnderTest.canResolve(Fixture.class.getMethod("post"))).isTrue();
-        assertThat(resolverUnderTest.canResolve(Fixture.class.getMethod("put"))).isTrue();
-        assertThat(resolverUnderTest.canResolve(Fixture.class.getMethod("none"))).isFalse();
-        assertThat(resolverUnderTest.canResolve(Fixture.class.getMethod("random"))).isFalse();
     }
 
     @Test
     public void test_that_resolves_to_the_right_verb() throws Exception {
-
         assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("delete"))).isPresent().contains(CrudAction.DELETE);
         assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("get"))).isPresent().contains(CrudAction.READ);
         assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("head"))).isPresent().contains(CrudAction.READ);
@@ -53,7 +38,6 @@ public class RestCrudActionResolverTest {
         assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("put"))).isPresent().contains(CrudAction.UPDATE);
         assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("none"))).isNotPresent();
         assertThat(resolverUnderTest.resolve(Fixture.class.getMethod("random"))).isNotPresent();
-
     }
 
     // Test Fixture

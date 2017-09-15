@@ -23,6 +23,8 @@ import org.seedstack.seed.security.SecurityConfig;
 import org.seedstack.seed.security.spi.CrudActionResolver;
 import org.seedstack.seed.security.spi.SecurityScope;
 import org.seedstack.shed.misc.PriorityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +41,7 @@ import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
  * implementation.
  */
 public class SecurityPlugin extends AbstractSeedPlugin {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityPlugin.class);
     private final Map<String, Class<? extends Scope>> scopeClasses = new HashMap<>();
     private final Set<SecurityProvider> securityProviders = new HashSet<>();
     private final List<Class<? extends CrudActionResolver>> crudActionResolvers = new ArrayList<>();
@@ -68,7 +71,7 @@ public class SecurityPlugin extends AbstractSeedPlugin {
     }
 
     @Override
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     public InitState initialize(InitContext initContext) {
         SecurityConfig securityConfig = getConfiguration(SecurityConfig.class);
         Map<Class<?>, Collection<Class<?>>> scannedClasses = initContext.scannedSubTypesByAncestorClass();
@@ -80,56 +83,64 @@ public class SecurityPlugin extends AbstractSeedPlugin {
 
         elAvailable = initContext.dependency(ELPlugin.class).isFunctionMappingAvailable();
 
-        securityConfigurer = new SecurityConfigurer(securityConfig, scannedClasses, (Collection) scannedClasses.get(PrincipalCustomizer.class));
+        securityConfigurer = new SecurityConfigurer(
+                securityConfig,
+                scannedClasses,
+                (Collection) scannedClasses.get(PrincipalCustomizer.class)
+        );
 
         return InitState.INITIALIZED;
     }
 
     @SuppressWarnings("unchecked")
-    private void configureCrudActionResolvers(Collection<Class<?>> resolvers) {
-        if(resolvers==null) {
-            //No resolvers configured on the system, skipping crudActionResolver configuration
-            return;
+    private void configureCrudActionResolvers(Collection<Class<?>> candidates) {
+        if (candidates != null) {
+            candidates.stream()
+                    .map(x -> (Class<? extends CrudActionResolver>) x)
+                    .forEach(resolver -> {
+                        crudActionResolvers.add(resolver);
+                        LOGGER.trace("Detected CRUD action resolver {}", resolver.getName());
+                    });
+            sortByPriority(crudActionResolvers, PriorityUtils::priorityOfClassOf);
         }
-        resolvers.stream()
-                .map(x -> (Class<? extends CrudActionResolver>) x)
-                .forEach(crudActionResolvers::add);
-        sortByPriority(crudActionResolvers, PriorityUtils::priorityOfClassOf);
+        LOGGER.debug("Detected {} CRUD action resolver(s)", crudActionResolvers.size());
     }
 
     @SuppressWarnings("unchecked")
-    private void configureScopes(Collection<Class<?>> scopeClasses) {
-        if (scopeClasses != null) {
-            for (Class<?> scopeCandidateClass : scopeClasses) {
-                if (Scope.class.isAssignableFrom(scopeCandidateClass)) {
-                    SecurityScope securityScope = scopeCandidateClass.getAnnotation(SecurityScope.class);
+    private void configureScopes(Collection<Class<?>> candidates) {
+        if (candidates != null) {
+            for (Class<?> candidate : candidates) {
+                if (Scope.class.isAssignableFrom(candidate)) {
+                    SecurityScope securityScope = candidate.getAnnotation(SecurityScope.class);
                     String scopeName;
 
                     if (securityScope != null) {
                         scopeName = securityScope.value();
                     } else {
-                        scopeName = scopeCandidateClass.getSimpleName();
+                        scopeName = candidate.getSimpleName();
                     }
 
                     try {
-                        scopeCandidateClass.getConstructor(String.class);
+                        candidate.getConstructor(String.class);
                     } catch (NoSuchMethodException e) {
                         throw SeedException.wrap(e, SecurityErrorCode.MISSING_ADEQUATE_SCOPE_CONSTRUCTOR)
                                 .put("scopeName", scopeName)
-                                .put("class", scopeCandidateClass.getName());
+                                .put("class", candidate.getName());
                     }
 
-                    if (this.scopeClasses.containsKey(scopeName)) {
+                    if (scopeClasses.containsKey(scopeName)) {
                         throw SeedException.createNew(SecurityErrorCode.DUPLICATE_SCOPE_NAME)
                                 .put("scopeName", scopeName)
-                                .put("class1", this.scopeClasses.get(scopeName).getName())
-                                .put("class2", scopeCandidateClass.getName());
+                                .put("class1", scopeClasses.get(scopeName).getName())
+                                .put("class2", candidate.getName());
                     }
 
-                    this.scopeClasses.put(scopeName, (Class<? extends Scope>) scopeCandidateClass);
+                    LOGGER.trace("Detected security scope '{}' implemented by {}", scopeName, candidate.getName());
+                    scopeClasses.put(scopeName, (Class<? extends Scope>) candidate);
                 }
             }
         }
+        LOGGER.debug("Detected {} security scope(s)", scopeClasses.size());
     }
 
     @Override

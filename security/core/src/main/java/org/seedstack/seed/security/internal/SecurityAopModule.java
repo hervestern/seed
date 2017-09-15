@@ -10,10 +10,10 @@ package org.seedstack.seed.security.internal;
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.multibindings.Multibinder;
-import org.seedstack.seed.security.RequiresCrud;
+import org.seedstack.seed.security.RequiresCrudPermissions;
 import org.seedstack.seed.security.RequiresPermissions;
 import org.seedstack.seed.security.RequiresRoles;
-import org.seedstack.seed.security.internal.authorization.RequiresCrudInterceptor;
+import org.seedstack.seed.security.internal.authorization.RequiresCrudPermissionsInterceptor;
 import org.seedstack.seed.security.internal.authorization.RequiresPermissionsInterceptor;
 import org.seedstack.seed.security.internal.authorization.RequiresRolesInterceptor;
 import org.seedstack.seed.security.spi.CrudActionResolver;
@@ -40,11 +40,11 @@ class SecurityAopModule extends AbstractModule {
             crudActionResolverMultibinder.addBinding().to(crudActionResolverClass);
         }
 
-        RequiresCrudInterceptor requiresCrudInterceptor = new RequiresCrudInterceptor();
-        requestInjection(requiresCrudInterceptor);
+        RequiresCrudPermissionsInterceptor requiresCrudPermissionsInterceptor = new RequiresCrudPermissionsInterceptor();
+        requestInjection(requiresCrudPermissionsInterceptor);
 
         // Allows a single annotation at class level, or multiple annotations / one per method
-        bindInterceptor(Matchers.annotatedWith(RequiresCrud.class), Matchers.any(), requiresCrudInterceptor);
-        bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresCrud.class), requiresCrudInterceptor);
+        bindInterceptor(Matchers.annotatedWith(RequiresCrudPermissions.class), Matchers.any(), requiresCrudPermissionsInterceptor);
+        bindInterceptor(Matchers.any(), Matchers.annotatedWith(RequiresCrudPermissions.class), requiresCrudPermissionsInterceptor);
     }
 }

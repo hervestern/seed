@@ -7,55 +7,47 @@
  */
 package org.seedstack.seed.security.internal.authorization;
 
-import java.lang.annotation.Annotation;
-import java.util.Arrays;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.seedstack.seed.core.internal.guice.ProxyUtils;
 import org.seedstack.seed.security.AuthorizationException;
 import org.seedstack.seed.security.Logical;
 import org.seedstack.seed.security.RequiresRoles;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Interceptor for annotation RequiresRoles
  */
 public class RequiresRolesInterceptor extends AbstractInterceptor implements MethodInterceptor {
-
-  @Override
-  public Object invoke(MethodInvocation invocation) throws Throwable {
-    Annotation annotation = findAnnotation(invocation);
-    if (annotation == null) {
-      return invocation.proceed();
-    }
-    RequiresRoles rrAnnotation = (RequiresRoles) annotation;
-    String[] roles = rrAnnotation.value();
-    if (roles.length == 1) {
-      this.checkRole(roles[0]);
-      return invocation.proceed();
-    } else {
-      boolean isAllowed = this.hasRoles(roles, rrAnnotation.logical());
-
-      if (!isAllowed) {
-        if (Logical.OR.equals(rrAnnotation.logical())) {
-          throw new AuthorizationException(
-              "User does not have any of the roles to access method "
-                  + invocation.getMethod().toString());
-        } else {
-          throw new AuthorizationException(
-              "Subject doesn't have roles " + Arrays.toString(roles));
+    @Override
+    public Object invoke(MethodInvocation invocation) throws Throwable {
+        Optional<RequiresRoles> annotation = findAnnotation(invocation);
+        if (annotation.isPresent()) {
+            RequiresRoles rrAnnotation = annotation.get();
+            String[] roles = rrAnnotation.value();
+            if (roles.length == 1) {
+                checkRole(roles[0]);
+            } else {
+                boolean isAllowed = hasRoles(roles, rrAnnotation.logical());
+                if (!isAllowed) {
+                    if (Logical.OR.equals(rrAnnotation.logical())) {
+                        throw new AuthorizationException("User does not have any of the roles to access method " + invocation.getMethod().toString());
+                    } else {
+                        throw new AuthorizationException("Subject doesn't have roles " + Arrays.toString(roles));
+                    }
+                }
+            }
         }
-      }
-
+        return invocation.proceed();
     }
 
-    return invocation.proceed();
-  }
-
-  private Annotation findAnnotation(MethodInvocation invocation) {
-    Annotation annotation = invocation.getMethod().getAnnotation(RequiresRoles.class);
-    if (annotation == null) {
-      annotation = invocation.getThis().getClass().getAnnotation(RequiresRoles.class);
+    private Optional<RequiresRoles> findAnnotation(MethodInvocation invocation) {
+        RequiresRoles annotation = invocation.getMethod().getAnnotation(RequiresRoles.class);
+        if (annotation == null) {
+            annotation = ProxyUtils.cleanProxy(invocation.getThis().getClass()).getAnnotation(RequiresRoles.class);
+        }
+        return Optional.ofNullable(annotation);
     }
-    return annotation;
-  }
 }

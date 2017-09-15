@@ -7,28 +7,28 @@
  */
 package org.seedstack.seed.security.spi;
 
+import org.seedstack.seed.security.CrudAction;
+
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import org.seedstack.seed.security.CrudAction;
-
+/**
+ * A class implementing {@link CrudActionResolver} provides logic to resolve the {@link CrudAction} that is associated
+ * to a particular method. For instance, a JAX-RS resolver could use JAX-RS annotations to determine the ongoing CRUD
+ * action. Another example would be a Servlet resolver which can use the method signature of an HttpServlet to determine
+ * the corresponding action.
+ *
+ * <p>
+ * Classes implementing this interface can be annotated with {@link javax.annotation.Priority} to define an absolute
+ * order among them.
+ * </p>
+ */
 public interface CrudActionResolver {
-  /**
-   * Checks if the resolver is able to resolve a {@link CrudAction} from the specified method
-   * object.
-   *
-   * @param method
-   *          the method object.
-   * @return true if it is able to resolve a {@link CrudAction}, false otherwise.
-   */
-  boolean canResolve(Method method);
-
-  /**
-   * Resolves a {@link CrudAction} from the specified method object.
-   *
-   * @param method
-   *          the method object.
-   * @return an optionally resolved {@link CrudAction}.
-   */
-  Optional<CrudAction> resolve(Method method);
+    /**
+     * Resolves a {@link CrudAction} from the specified method object.
+     *
+     * @param method the method object.
+     * @return an optionally resolved {@link CrudAction}.
+     */
+    Optional<CrudAction> resolve(Method method);
 }

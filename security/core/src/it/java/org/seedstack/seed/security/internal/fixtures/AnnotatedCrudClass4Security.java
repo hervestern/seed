@@ -8,14 +8,14 @@
 package org.seedstack.seed.security.internal.fixtures;
 
 import org.seedstack.seed.it.ITBind;
-import org.seedstack.seed.security.RequiresCrud;
+import org.seedstack.seed.security.RequiresCrudPermissions;
 import org.seedstack.seed.security.internal.fixtures.annotations.CREATE;
 import org.seedstack.seed.security.internal.fixtures.annotations.DELETE;
 import org.seedstack.seed.security.internal.fixtures.annotations.READ;
 import org.seedstack.seed.security.internal.fixtures.annotations.UPDATE;
 
 @ITBind
-@RequiresCrud("crudTest")
+@RequiresCrudPermissions("crudTest")
 public class AnnotatedCrudClass4Security {
 
     @DELETE
