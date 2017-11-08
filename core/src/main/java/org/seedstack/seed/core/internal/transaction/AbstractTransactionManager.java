@@ -21,6 +21,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.transaction.Propagation;
+import org.seedstack.seed.transaction.Transaction;
 import org.seedstack.seed.transaction.Transactional;
 import org.seedstack.seed.transaction.spi.ExceptionHandler;
 import org.seedstack.seed.transaction.spi.TransactionHandler;
@@ -38,6 +39,17 @@ public abstract class AbstractTransactionManager implements TransactionManager {
     protected Injector injector;
     @Inject
     private Set<TransactionMetadataResolver> transactionMetadataResolvers;
+
+    @Override
+    public <T extends Transaction> T begin(Class<T> transactionClass) {
+        TransactionHandler<Object> transactionHandler;
+        try {
+            transactionHandler = getTransactionHandler(transactionMetadata.getHandler(),
+                    transactionMetadata.getResource());
+        } catch (SeedException e) {
+            throw e.put("method", invocation.getMethod().toString());
+        }
+    }
 
     @Override
     public MethodInterceptor getMethodInterceptor() {

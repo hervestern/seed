@@ -9,12 +9,21 @@
 package org.seedstack.seed.transaction.spi;
 
 import org.aopalliance.intercept.MethodInterceptor;
+import org.seedstack.seed.transaction.Transaction;
 
 /**
  * This interface must be implemented by transaction managers. Transaction managers are responsible to intercept
  * and handle transactional method calls.
  */
 public interface TransactionManager {
+    /**
+     * Manually begins a new transaction and returns its controlling instance.
+     *
+     * @param <T> the type of transaction object.
+     * @return the instance controlling the transaction.
+     */
+    <T extends Transaction> T begin();
+
     /**
      * Returns the method interceptor that implements the transactional behavior.
      *
