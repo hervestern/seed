@@ -23,6 +23,11 @@ public abstract class AbstractSeedTool extends AbstractSeedPlugin implements See
     }
 
     @Override
+    public final String description() {
+        return toolDescription();
+    }
+
+    @Override
     public StartMode startMode() {
         return StartMode.MINIMAL;
     }
@@ -42,6 +47,4 @@ public abstract class AbstractSeedTool extends AbstractSeedPlugin implements See
     protected Collection<Class<?>> toolPlugins() {
         return Collections.emptyList();
     }
-
-    public abstract String toolName();
 }

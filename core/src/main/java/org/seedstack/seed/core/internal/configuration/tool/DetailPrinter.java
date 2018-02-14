@@ -8,84 +8,51 @@
 
 package org.seedstack.seed.core.internal.configuration.tool;
 
-import com.google.common.base.Strings;
 import java.io.PrintStream;
+import java.util.Map;
 import org.fusesource.jansi.Ansi;
 import org.seedstack.shed.text.TextWrapper;
 
 class DetailPrinter {
     private static final TextWrapper textWrapper = new TextWrapper(120);
-    private final PropertyInfo propertyInfo;
+    private final String baseFullName;
+    private final PropertyInfo basePropertyInfo;
 
-    DetailPrinter(PropertyInfo propertyInfo) {
-        this.propertyInfo = propertyInfo;
+    DetailPrinter(String baseFullName, PropertyInfo basePropertyInfo) {
+        this.baseFullName = baseFullName;
+        this.basePropertyInfo = basePropertyInfo;
     }
 
     void printDetail(PrintStream stream) {
         Ansi ansi = Ansi.ansi();
-
-        String title = "Details of " + propertyInfo.getName();
-        ansi
-                .a(title)
-                .newline()
-                .a(Strings.repeat("-", title.length()))
-                .newline().newline();
-
-        printSummary(propertyInfo, ansi);
-        printDeclaration(propertyInfo, ansi);
-        printLongDescription(propertyInfo, ansi);
-        printAdditionalInfo(propertyInfo, ansi);
-        ansi.newline();
-
+        printDetails(ansi);
         stream.print(ansi.toString());
     }
 
-    private Ansi printSummary(PropertyInfo propertyInfo, Ansi ansi) {
-        return ansi.a(propertyInfo.getShortDescription()).newline();
-    }
+    private void printDetails(Ansi ansi) {
+        String indent = "  ";
+        String[] split = baseFullName.split("\\.");
+        for (int i = 0; i < split.length; i++) {
+            ansi.a(split[i]).a(":");
+            if (i < split.length - 1) {
+                ansi.newline().a(indent);
+            } else {
+                ansi.a(" ");
+            }
+            indent += "  ";
+        }
+        ansi.a(String.valueOf(basePropertyInfo.getDefaultValue()));
 
-    private void printDeclaration(PropertyInfo propertyInfo, Ansi ansi) {
         ansi
                 .newline()
-                .a("    ")
-                .fgBright(Ansi.Color.MAGENTA)
-                .a(propertyInfo.getType())
-                .reset()
-                .a(" ")
-                .fgBright(Ansi.Color.BLUE)
-                .a(propertyInfo.getName())
-                .reset();
-
-        Object defaultValue = propertyInfo.getDefaultValue();
-        if (defaultValue != null) {
-            ansi
-                    .a(" = ")
-                    .fgBright(Ansi.Color.GREEN)
-                    .a(String.valueOf(defaultValue))
-                    .reset();
-        }
-
-        ansi
-                .a(";")
+                .newline()
+                .a("Inner properties")
+                .newline()
+                .a("----------------")
                 .newline();
-    }
 
-    private void printLongDescription(PropertyInfo propertyInfo, Ansi ansi) {
-        String longDescription = propertyInfo.getLongDescription();
-        if (longDescription != null) {
-            ansi.newline().a(textWrapper.wrap(longDescription)).newline();
-        }
-    }
+        for (Map.Entry<String, PropertyInfo> inner : basePropertyInfo.getInnerPropertyInfo().entrySet()) {
 
-    private void printAdditionalInfo(PropertyInfo propertyInfo, Ansi ansi) {
-        if (propertyInfo.isMandatory() || propertyInfo.isSingleValue()) {
-            ansi.newline();
-        }
-        if (propertyInfo.isMandatory()) {
-            ansi.a("* This property is mandatory.").newline();
-        }
-        if (propertyInfo.isSingleValue()) {
-            ansi.a("* This property is the default property of its declaring object").newline();
         }
     }
 }

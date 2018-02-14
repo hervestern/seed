@@ -20,28 +20,9 @@ class TreePrinter {
         this.node = node;
     }
 
-    private static String defaultToString(Object o) {
-        return o.getClass().getName() + "@" + Integer.toHexString(o.hashCode());
-    }
-
     void printTree(PrintStream stream) {
         Ansi ansi = Ansi.ansi();
-
-        ansi
-                .a("Configuration options")
-                .newline()
-                .a("---------------------")
-                .newline();
-
         printTree(node, "", ansi);
-
-        ansi
-                .newline()
-                .a("(*) mandatory property")
-                .newline()
-                .a("(~) default property (can be specified as single value)")
-                .newline();
-
         stream.print(ansi.toString());
     }
 
@@ -50,13 +31,12 @@ class TreePrinter {
             ansi
                     .a(leftPadding)
                     .fg(Ansi.Color.YELLOW).a(node.getName()).reset()
+                    .a(":")
                     .newline();
-
             for (PropertyInfo propertyInfo : node.getPropertyInfo()) {
                 printProperty(propertyInfo, leftPadding, ansi);
             }
         }
-
         for (Node child : node.getChildren()) {
             printTree(child, leftPadding + (node.isRootNode() ? "" : INDENTATION), ansi);
         }
@@ -72,31 +52,9 @@ class TreePrinter {
                 .a(propertyInfo.getName())
                 .reset();
 
-        Object defaultValue = propertyInfo.getDefaultValue();
-        if (defaultValue != null) {
-            String stringDefaultValue = String.valueOf(defaultValue);
-            if (!defaultToString(defaultValue).equals(stringDefaultValue)) {
-                ansi
-                        .a(" = ")
-                        .fgBright(Ansi.Color.GREEN)
-                        .a(defaultValue instanceof String ? String.format("\"%s\"",
-                                stringDefaultValue) : stringDefaultValue)
-                        .reset();
-            }
-        }
-
         ansi
-                .fgBright(Ansi.Color.MAGENTA)
-                .a(" (")
-                .a(propertyInfo.getType())
-                .a(")")
-                .reset()
                 .a(": ")
                 .a(AnsiRenderer.render(propertyInfo.getShortDescription()))
                 .newline();
-
-        for (PropertyInfo child : propertyInfo.getInnerPropertyInfo().values()) {
-            printProperty(child, leftPadding + INDENTATION, ansi);
-        }
     }
 }

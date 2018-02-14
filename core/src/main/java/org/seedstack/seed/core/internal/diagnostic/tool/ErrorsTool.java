@@ -35,6 +35,11 @@ public class ErrorsTool extends AbstractSeedTool {
     }
 
     @Override
+    public String toolDescription() {
+        return "Displays all possible error codes of the application";
+    }
+
+    @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         return classpathScanRequestBuilder()
                 .subtypeOf(ErrorCode.class)

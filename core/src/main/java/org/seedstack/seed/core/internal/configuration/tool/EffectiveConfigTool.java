@@ -17,6 +17,11 @@ public class EffectiveConfigTool extends AbstractSeedTool {
     }
 
     @Override
+    public String toolDescription() {
+        return "Displays the effective configuration of the application";
+    }
+
+    @Override
     public Integer call() throws Exception {
         System.out.println(getConfiguration().toString());
         return 0;

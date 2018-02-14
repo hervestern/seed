@@ -25,6 +25,13 @@ public interface SeedTool extends Callable<Integer>, Plugin {
     String toolName();
 
     /**
+     * Returns the human-friendly description of the tool.
+     *
+     * @return the description of the tool.
+     */
+    String toolDescription();
+
+    /**
      * Determines the start mode.
      * <ul>
      * <li>MINIMAL will disable plugin auto-detection and only enable plugins returned by the

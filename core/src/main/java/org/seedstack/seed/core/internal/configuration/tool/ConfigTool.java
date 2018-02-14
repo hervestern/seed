@@ -36,6 +36,11 @@ public class ConfigTool extends AbstractSeedTool {
     }
 
     @Override
+    public String toolDescription() {
+        return "Displays the tree of all possible configuration options of the application";
+    }
+
+    @Override
     protected void setup(SeedRuntime seedRuntime) {
         configuration = seedRuntime.getConfiguration();
     }
@@ -83,7 +88,7 @@ public class ConfigTool extends AbstractSeedTool {
                 throw SeedException.createNew(CoreErrorCode.INVALID_CONFIG_PROPERTY).put("property",
                         path[path.length - 1]);
             }
-            new DetailPrinter(propertyInfo).printDetail(System.out);
+            new DetailPrinter(String.join(".", path), propertyInfo).printDetail(System.out);
         }
     }
 

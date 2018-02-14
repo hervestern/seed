@@ -55,7 +55,7 @@ class ErrorCodePrinter {
                         .fgBright(Ansi.Color.BLUE)
                         .a(errorCode)
                         .reset()
-                        .a("=")
+                        .a(": ")
                         .a(Optional.ofNullable(template).orElse(""))
                         .newline();
                 someProperty = true;
@@ -63,6 +63,7 @@ class ErrorCodePrinter {
         }
 
         Ansi ansi = new Ansi();
+
         if (someProperty) {
             ansi.fgBright(Ansi.Color.YELLOW)
                     .a(getTitle(errorCodeClass))

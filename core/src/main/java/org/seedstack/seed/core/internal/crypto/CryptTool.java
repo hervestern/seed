@@ -39,6 +39,11 @@ public class CryptTool extends AbstractSeedTool {
     }
 
     @Override
+    public String toolDescription() {
+        return "Crypts a password using the master keystore of the application";
+    }
+
+    @Override
     protected Collection<Class<?>> toolPlugins() {
         return Lists.newArrayList(CryptoPlugin.class);
     }
