@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
 import com.google.common.base.Strings;
@@ -25,6 +26,7 @@ import org.seedstack.seed.security.RoleMapping;
 import org.seedstack.seed.security.RolePermissionResolver;
 import org.seedstack.seed.security.Scope;
 import org.seedstack.seed.security.SecurityConfig;
+import org.seedstack.seed.security.SecurityService;
 import org.seedstack.seed.security.SecuritySupport;
 
 class SecurityInternalModule extends PrivateModule {
@@ -36,8 +38,8 @@ class SecurityInternalModule extends PrivateModule {
         this.scopeClasses = scopeClasses;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
+    @SuppressWarnings("deprecation")
     public void configure() {
         bind(ShiroRealmAdapter.class);
         bind(new ScopeClassesTypeLiteral()).toInstance(scopeClasses);
@@ -45,7 +47,13 @@ class SecurityInternalModule extends PrivateModule {
         bindPrincipalCustomizers();
         bind(SecurityConfig.class).toInstance(securityConfigurer.getSecurityConfiguration());
         expose(SecurityConfig.class);
-        bind(SecuritySupport.class).to(ShiroSecuritySupport.class);
+
+        // Expose the security service
+        bind(SecurityService.class).to(ShiroSecurityService.class);
+        expose(SecurityService.class);
+
+        // Expose the legacy security support until removed
+        bind(SecuritySupport.class).to(SecuritySupportAdapter.class);
         expose(SecuritySupport.class);
     }
 

@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.principals;
 
 import java.io.Serializable;
@@ -12,20 +13,25 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
- * Utility class to create and manipulate common principals.
+ * Represents a collection of principals.
  */
-public final class Principals {
+public class Principals {
     public static final String IDENTITY = "userId";
     public static final String LOCALE = "locale";
     public static final String FIRST_NAME = "firstName";
     public static final String LAST_NAME = "lastName";
     public static final String FULL_NAME = "fullName";
 
-    private Principals() {
-        // no instantiation allowed
+    private final List<Principal<?>> primary = new ArrayList<>();
+    private final List<Principal<?>> others = new ArrayList<>();
+
+    public <T> primary() {
+
     }
+
 
     private static SimplePrincipalProvider simplePrincipal(String name, String value) {
         return new SimplePrincipalProvider(name, value);

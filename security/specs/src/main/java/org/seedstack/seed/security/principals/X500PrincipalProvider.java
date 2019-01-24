@@ -25,7 +25,7 @@ public class X500PrincipalProvider implements PrincipalProvider<X500Principal> {
     }
 
     @Override
-    public X500Principal getPrincipal() {
+    public X500Principal value() {
         return x500Principal;
     }
 }

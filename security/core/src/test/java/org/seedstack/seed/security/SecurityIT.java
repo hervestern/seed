@@ -27,7 +27,7 @@ public class SecurityIT {
     @Inject
     private AnnotatedClass4Security annotatedClass;
     @Inject
-    private SecuritySupport securitySupport;
+    private SecurityService securityService;
     @Inject
     private SecurityManager securityManager;
     @Inject
@@ -38,17 +38,17 @@ public class SecurityIT {
     @WithUser(id = "Obiwan", password = "yodarulez")
     public void obiwanShouldBeAJedi() {
         assertThat(SecurityUtils.getSubject().hasRole("jedi")).isTrue();
-        assertThat(securitySupport.hasRole("jedi")).isTrue();
-        assertThat(securitySupport.hasRole("nothing")).isTrue();
+        assertThat(securityService.hasRole("jedi")).isTrue();
+        assertThat(securityService.hasRole("nothing")).isTrue();
     }
 
     @Test
     @WithUser(id = "Anakin", password = "imsodark")
     public void anakinShouldBeAbleToLearnAtTheAcademyAndShouldNotBeAJedi() {
         assertThat(SecurityUtils.getSubject().isPermitted("academy:learn")).isTrue();
-        assertThat(securitySupport.isPermitted("academy:learn")).isTrue();
+        assertThat(securityService.hasPermission("academy:learn")).isTrue();
         assertThat(SecurityUtils.getSubject().hasRole("jedi")).isFalse();
-        assertThat(securitySupport.hasRole("jedi")).isFalse();
+        assertThat(securityService.hasRole("jedi")).isFalse();
     }
 
     @Test(expected = AuthenticationException.class)
@@ -62,14 +62,14 @@ public class SecurityIT {
     @WithUser(id = "ThePoltergeist", password = "bouh")
     public void thePoltergeistShouldBeGhostOnMU() {
         assertThat(SecurityUtils.getSubject().hasRole("ghost")).isTrue();
-        assertThat(securitySupport.hasRole("ghost")).isTrue();
-        assertThat(securitySupport.hasRole("ghost", new SimpleScope("MU"))).isTrue();
-        assertThat(securitySupport.hasRole("ghost", new SimpleScope("SX"))).isTrue();
-        assertThat(securitySupport.isPermitted("site:haunt")).isTrue();
-        assertThat(securitySupport.isPermitted("site:haunt", new SimpleScope("MU"))).isTrue();
-        assertThat(securitySupport.isPermitted("site:haunt", new SimpleScope("SX"))).isTrue();
-        assertThat(securitySupport.getSimpleScopes().contains(new SimpleScope("MU"))).isTrue();
-        assertThat(securitySupport.getSimpleScopes().contains(new SimpleScope("SX"))).isTrue();
+        assertThat(securityService.hasRole("ghost")).isTrue();
+        assertThat(securityService.hasRole("ghost", new SimpleScope("MU"))).isTrue();
+        assertThat(securityService.hasRole("ghost", new SimpleScope("SX"))).isTrue();
+        assertThat(securityService.hasPermission("site:haunt")).isTrue();
+        assertThat(securityService.hasPermission("site:haunt", new SimpleScope("MU"))).isTrue();
+        assertThat(securityService.hasPermission("site:haunt", new SimpleScope("SX"))).isTrue();
+        assertThat(securityService.getSimpleScopes().contains(new SimpleScope("MU"))).isTrue();
+        assertThat(securityService.getSimpleScopes().contains(new SimpleScope("SX"))).isTrue();
     }
 
     @Test
@@ -82,7 +82,7 @@ public class SecurityIT {
     @Test
     @WithUser(id = "nobody", password = "foreverAlone")
     public void userNobodyShouldHaveRoleNothing() {
-        assertThat(securitySupport.hasRole("nothing"))
+        assertThat(securityService.hasRole("nothing"))
                 .isTrue();
     }
 
@@ -101,7 +101,7 @@ public class SecurityIT {
     @Test
     @WithUser(id = "Anakin", password = "imsodark")
     public void anakinShouldHaveCustomizedPrincipal() {
-        assertThat(getSimplePrincipalByName(securitySupport.getOtherPrincipals(), "foo").getValue())
+        assertThat(getSimplePrincipalByName(securityService.getPrincipals(), "foo").getValue())
                 .isEqualTo("bar");
     }
 

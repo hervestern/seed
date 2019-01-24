@@ -25,7 +25,7 @@ public class CrudSecurityIT {
     @Inject
     private AnnotatedCrudMethods4Security annotatedMethods;
     @Inject
-    private SecuritySupport securitySupport;
+    private SecurityService securityService;
 
     @Test
     @WithUser(id = "Obiwan", password = "yodarulez")
@@ -40,23 +40,23 @@ public class CrudSecurityIT {
     public void r2D2ShouldBeAbleToBeARestbot() {
         // Delete jabba!
         assertThat(SecurityUtils.getSubject().isPermitted("jabba:delete")).isTrue();
-        assertThat(securitySupport.isPermitted("jabba:delete")).isTrue();
+        assertThat(securityService.hasPermission("jabba:delete")).isTrue();
 
         // Update c3p0!
         assertThat(SecurityUtils.getSubject().isPermitted("c3p0:update")).isTrue();
-        assertThat(securitySupport.isPermitted("c3p0:update")).isTrue();
+        assertThat(securityService.hasPermission("c3p0:update")).isTrue();
 
         // Create X-Wing
         assertThat(SecurityUtils.getSubject().isPermitted("xwing:create")).isTrue();
-        assertThat(securitySupport.isPermitted("xwing:create")).isTrue();
+        assertThat(securityService.hasPermission("xwing:create")).isTrue();
 
         // Read chewaka
         assertThat(SecurityUtils.getSubject().isPermitted("chewaka:read")).isTrue();
-        assertThat(securitySupport.isPermitted("chewaka:read")).isTrue();
+        assertThat(securityService.hasPermission("chewaka:read")).isTrue();
 
         // is a restbot
         assertThat(SecurityUtils.getSubject().hasRole("restbot")).isTrue();
-        assertThat(securitySupport.hasRole("restbot")).isTrue();
+        assertThat(securityService.hasRole("restbot")).isTrue();
     }
 
     @Test
@@ -81,15 +81,15 @@ public class CrudSecurityIT {
     public void c3P0ShouldOnlyBeAbleToReadRestAsInterpreter() {
         // Read ewoks
         assertThat(SecurityUtils.getSubject().isPermitted("ewok:read")).isTrue();
-        assertThat(securitySupport.isPermitted("ewok:read")).isTrue();
+        assertThat(securityService.hasPermission("ewok:read")).isTrue();
 
         // Should not be able to update itself
         assertThat(SecurityUtils.getSubject().isPermitted("c3p0:update")).isFalse();
-        assertThat(securitySupport.isPermitted("c3p0:update")).isFalse();
+        assertThat(securityService.hasPermission("c3p0:update")).isFalse();
 
         // Is an interpreter
         assertThat(SecurityUtils.getSubject().hasRole("interpreter")).isTrue();
-        assertThat(securitySupport.hasRole("interpreter")).isTrue();
+        assertThat(securityService.hasRole("interpreter")).isTrue();
     }
 
     @Test

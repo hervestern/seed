@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
 import java.io.Serializable;
@@ -25,30 +26,30 @@ import org.apache.shiro.subject.Subject;
 import org.seedstack.seed.security.AuthorizationException;
 import org.seedstack.seed.security.Role;
 import org.seedstack.seed.security.Scope;
-import org.seedstack.seed.security.SecuritySupport;
+import org.seedstack.seed.security.SecurityService;
 import org.seedstack.seed.security.SimpleScope;
 import org.seedstack.seed.security.internal.authorization.ScopePermission;
 import org.seedstack.seed.security.internal.authorization.SeedAuthorizationInfo;
+import org.seedstack.seed.security.principals.Principal;
 import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.seedstack.seed.security.principals.Principals;
 import org.seedstack.seed.security.principals.SimplePrincipalProvider;
 
-class ShiroSecuritySupport implements SecuritySupport {
-
+class ShiroSecurityService implements SecurityService {
     @Inject
     private Set<Realm> realms;
 
     @Override
-    public PrincipalProvider<?> getIdentityPrincipal() {
+    public Principal<?> getIdentity() {
         Subject subject = SecurityUtils.getSubject();
-        if (subject.getPrincipal() instanceof PrincipalProvider) {
-            return (PrincipalProvider<?>) subject.getPrincipal();
+        if (subject.getPrincipal() instanceof Principal) {
+            return (Principal<?>) subject.getPrincipal();
         }
         return Principals.identityPrincipal("");
     }
 
     @Override
-    public Collection<PrincipalProvider<?>> getOtherPrincipals() {
+    public Collection<PrincipalProvider<?>> getPrincipals() {
         Collection<PrincipalProvider<?>> principals = new ArrayList<>();
         PrincipalCollection principalCollection = SecurityUtils.getSubject().getPrincipals();
         if (principalCollection == null) {
@@ -64,17 +65,17 @@ class ShiroSecuritySupport implements SecuritySupport {
 
     @Override
     public <T extends Serializable> Collection<PrincipalProvider<T>> getPrincipalsByType(Class<T> principalClass) {
-        return Principals.getPrincipalsByType(getOtherPrincipals(), principalClass);
+        return Principals.getPrincipalsByType(getPrincipals(), principalClass);
     }
 
     @Override
     public Collection<SimplePrincipalProvider> getSimplePrincipals() {
-        return Principals.getSimplePrincipals(getOtherPrincipals());
+        return Principals.getSimplePrincipals(getPrincipals());
     }
 
     @Override
     public SimplePrincipalProvider getSimplePrincipalByName(String principalName) {
-        return Principals.getSimplePrincipalByName(getOtherPrincipals(), principalName);
+        return Principals.getSimplePrincipalByName(getPrincipals(), principalName);
     }
 
     @Override
@@ -88,14 +89,14 @@ class ShiroSecuritySupport implements SecuritySupport {
     }
 
     @Override
-    public boolean isPermitted(String permission) {
+    public boolean hasPermission(String permission) {
         return SecurityUtils.getSubject().isPermitted(permission);
     }
 
     @Override
-    public boolean isPermitted(String permission, Scope... scopes) {
+    public boolean hasPermission(String permission, Scope... scopes) {
         if (ArrayUtils.isEmpty(scopes)) {
-            return isPermitted(permission);
+            return hasPermission(permission);
         }
         boolean isPermitted = true;
         for (Scope scope : scopes) {
@@ -154,8 +155,8 @@ class ShiroSecuritySupport implements SecuritySupport {
     }
 
     @Override
-    public boolean hasRole(String roleIdentifier) {
-        return SecurityUtils.getSubject().hasRole(roleIdentifier);
+    public boolean hasRole(String role) {
+        return SecurityUtils.getSubject().hasRole(role);
     }
 
     @Override

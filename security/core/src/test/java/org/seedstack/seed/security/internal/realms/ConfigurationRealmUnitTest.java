@@ -61,7 +61,7 @@ public class ConfigurationRealmUnitTest {
     public void getAuthenticationInfo_nominal() {
         UsernamePasswordToken token = new UsernamePasswordToken(USERNAME, PASSWORD);
         AuthenticationInfo authInfo = underTest.getAuthenticationInfo(token);
-        assertThat(authInfo.getIdentityPrincipal().getPrincipal()).isEqualTo(USERNAME);
+        assertThat(authInfo.getIdentityPrincipal().value()).isEqualTo(USERNAME);
     }
 
     @Test(expected = IncorrectCredentialsException.class)

@@ -8,19 +8,19 @@
 package org.seedstack.seed.security.internal.securityexpr;
 
 import javax.inject.Inject;
-import org.seedstack.seed.security.SecuritySupport;
+import org.seedstack.seed.security.SecurityService;
 import org.seedstack.seed.security.SimpleScope;
 
 /**
  * This class is an entry point for the security expression language.
  * <p>
- * It is mainly a static gateway to {@link SecuritySupport}.
+ * It is mainly a static gateway to {@link SecurityService}.
  * <p>
  * It is not meant to be used by projects directly.
  */
 public final class SecurityExpressionUtils {
     @Inject
-    private static SecuritySupport securitySupport;
+    private static SecurityService securityService;
 
     private SecurityExpressionUtils() {
     }
@@ -32,7 +32,7 @@ public final class SecurityExpressionUtils {
      * @return true if user has the given role
      */
     public static boolean hasRole(String role) {
-        return securitySupport.hasRole(role);
+        return securityService.hasRole(role);
     }
 
     /**
@@ -43,7 +43,7 @@ public final class SecurityExpressionUtils {
      * @return true if the user has the role for the given simple scope.
      */
     public static boolean hasRoleOn(String role, String simpleScope) {
-        return securitySupport.hasRole(role, new SimpleScope(simpleScope));
+        return securityService.hasRole(role, new SimpleScope(simpleScope));
     }
 
     /**
@@ -53,7 +53,7 @@ public final class SecurityExpressionUtils {
      * @return true if user has the given permission
      */
     public static boolean hasPermission(String permission) {
-        return securitySupport.isPermitted(permission);
+        return securityService.hasPermission(permission);
     }
 
     /**
@@ -64,6 +64,6 @@ public final class SecurityExpressionUtils {
      * @return true if user has the given permission for the given simple scope.
      */
     public static boolean hasPermissionOn(String permission, String simpleScope) {
-        return securitySupport.isPermitted(permission, new SimpleScope(simpleScope));
+        return securityService.hasPermission(permission, new SimpleScope(simpleScope));
     }
 }

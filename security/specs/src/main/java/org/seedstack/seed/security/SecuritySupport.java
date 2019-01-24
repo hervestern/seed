@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security;
 
 import java.io.Serializable;
@@ -15,7 +16,10 @@ import org.seedstack.seed.security.principals.SimplePrincipalProvider;
 
 /**
  * Support for all security concerns. Retrieve connected user principals, get/check roles/permissions...
+ *
+ * @deprecated Use {@link SecurityService instead}.
  */
+@Deprecated
 public interface SecuritySupport {
 
     /**
@@ -52,7 +56,7 @@ public interface SecuritySupport {
 
     /**
      * Gets the user's SimplePrincipalProviders.<br>
-     * A {@link org.seedstack.seed.security.principals.SimplePrincipalProvider} is a name/value principal. A list of
+     * A {@link SimplePrincipalProvider} is a name/value principal. A list of
      * common SimplePrincipalProviders names are found in class
      * {@link org.seedstack.seed.security.principals.Principals}.
      *
@@ -254,7 +258,7 @@ public interface SecuritySupport {
      * Authenticated on Shiro means that subject has successfully logged in on the current session
      *
      * @return true if authenticated, false otherwise.
-     * @see org.seedstack.seed.security.SecuritySupport#isRemembered()
+     * @see SecuritySupport#isRemembered()
      */
     boolean isAuthenticated();
 
@@ -269,7 +273,7 @@ public interface SecuritySupport {
      * Returns the host name or IP string of the host of the connected user, or {@code null} if the host is unknown.
      *
      * @return the host name or IP string of the host that originated this session, or {@code null} if the host
-     * address is unknown.
+     *         address is unknown.
      */
     String getHost();
 }
