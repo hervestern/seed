@@ -5,12 +5,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.undertow.internal;
 
 import static org.seedstack.shed.ClassLoaders.findMostCompleteClassLoader;
 
 import io.undertow.server.DefaultByteBufferPool;
-import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
@@ -29,7 +29,6 @@ import org.seedstack.seed.web.WebConfig;
 import org.xnio.XnioWorker;
 
 class DeploymentManagerFactory {
-    private static final String META_INF_RESOURCES = "META-INF/resources";
     private final ClassLoader mostCompleteClassLoader = findMostCompleteClassLoader(DeploymentManagerFactory.class);
     private final XnioWorker xnioWorker;
     private final UndertowConfig undertowConfig;
@@ -57,7 +56,7 @@ class DeploymentManagerFactory {
                 .setDeploymentName(applicationConfig.getId())
                 .setDisplayName(applicationConfig.getName())
                 .setDefaultSessionTimeout(serverConfig.sessions().getTimeout())
-                .setResourceManager(new ClassPathResourceManager(mostCompleteClassLoader, META_INF_RESOURCES))
+                .setResourceManager(new StaticResourceManager(serverConfig.staticResources()))
                 .addWelcomePages(serverConfig.getWelcomeFiles())
                 .addServletContextAttribute(
                         WebSocketDeploymentInfo.ATTRIBUTE_NAME,

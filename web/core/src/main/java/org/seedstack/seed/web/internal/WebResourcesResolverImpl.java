@@ -5,7 +5,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.web.internal.resources;
+
+package org.seedstack.seed.web.internal;
 
 import com.google.inject.assistedinject.Assisted;
 import java.net.MalformedURLException;
@@ -25,7 +26,6 @@ import org.seedstack.seed.web.ResourceInfo;
 import org.seedstack.seed.web.ResourceRequest;
 import org.seedstack.seed.web.WebConfig;
 import org.seedstack.seed.web.WebResourceResolver;
-import org.seedstack.seed.web.internal.WebErrorCode;
 import org.seedstack.shed.ClassLoaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,13 +48,13 @@ class WebResourcesResolverImpl implements WebResourceResolver {
 
     @Inject
     WebResourcesResolverImpl(final Application application, @Assisted ServletContext servletContext) {
-        WebConfig.StaticResourcesConfig staticResourcesConfig = application.getConfiguration().get(
-                WebConfig.class).staticResources();
+        WebConfig.ServerConfig.StaticResourcesConfig staticResourcesConfig = application.getConfiguration().get(
+                WebConfig.ServerConfig.StaticResourcesConfig.class);
         this.servletContext = servletContext;
         this.classLoader = ClassLoaders.findMostCompleteClassLoader(WebResourcesResolverImpl.class);
-        this.serveMinifiedResources = staticResourcesConfig.isMinificationEnabled();
-        this.serveGzippedResources = staticResourcesConfig.isGzipEnabled();
-        this.onTheFlyGzipping = staticResourcesConfig.isOnTheFlyGzipEnabled();
+        this.serveMinifiedResources = staticResourcesConfig.isServeMinified();
+        this.serveGzippedResources = staticResourcesConfig.isServeCompressed();
+        this.onTheFlyGzipping = staticResourcesConfig.isCompressAll();
     }
 
     @Override

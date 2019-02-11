@@ -5,19 +5,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.web;
+
+package org.seedstack.seed.web.internal;
 
 import javax.servlet.ServletContext;
+import org.seedstack.seed.web.WebResourceResolver;
 
-/**
- * Factory to create a {@link WebResourceResolver}.
- */
-public interface WebResourceResolverFactory {
-    /**
-     * Creates a WebResourceResolver.
-     *
-     * @param servletContext the servlet context to do resolution against.
-     * @return the resource resolver.
-     */
+interface WebResourceResolverFactory {
     WebResourceResolver createWebResourceResolver(ServletContext servletContext);
 }

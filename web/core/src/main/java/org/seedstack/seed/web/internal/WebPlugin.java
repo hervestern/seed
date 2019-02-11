@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web.internal;
 
 import static org.seedstack.shed.misc.PriorityUtils.sortByPriority;
@@ -137,7 +138,7 @@ public class WebPlugin extends AbstractSeedPlugin {
 
     @Override
     public Object nativeUnitModule() {
-        return new WebModule();
+        return new WebModule(servletContext);
     }
 
     @Override

@@ -208,6 +208,7 @@
                                 <exclude>org.seedstack.seed.transaction.spi.TransactionMetadata</exclude>
                                 <exclude>org.seedstack.seed.spi.DependencyProvider</exclude>
                                 <exclude>org.seedstack.seed.web.spi.AntiXsrfService</exclude>
+                                <exclude>org.seedstack.seed.web.WebResourceResolverFactory</exclude>
                             </excludes>
                         </parameter>
                     </configuration>

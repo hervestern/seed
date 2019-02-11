@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web;
 
 import java.util.ArrayList;
@@ -22,7 +23,6 @@ import org.seedstack.seed.validation.NotBlank;
 public class WebConfig {
     private boolean requestDiagnostic;
     private SessionTrackingMode sessionTrackingMode = SessionTrackingMode.COOKIE;
-    private StaticResourcesConfig staticResources = new StaticResourcesConfig();
     private CORSConfig cors = new CORSConfig();
     private ServerConfig serverConfig = new ServerConfig();
 
@@ -42,10 +42,6 @@ public class WebConfig {
     public WebConfig setSessionTrackingMode(SessionTrackingMode sessionTrackingMode) {
         this.sessionTrackingMode = sessionTrackingMode;
         return this;
-    }
-
-    public StaticResourcesConfig staticResources() {
-        return staticResources;
     }
 
     public CORSConfig cors() {
@@ -82,65 +78,6 @@ public class WebConfig {
         }
     }
 
-    @Config("static")
-    public static class StaticResourcesConfig {
-        private static final int DEFAULT_BUFFER_SIZE = 65535;
-
-        @SingleValue
-        private boolean enabled = true;
-        private int bufferSize = DEFAULT_BUFFER_SIZE;
-        private boolean minification = true;
-        private boolean gzip = true;
-        private boolean gzipOnTheFly = true;
-        private CacheConfig cache = new CacheConfig();
-
-        public boolean isEnabled() {
-            return enabled;
-        }
-
-        public int getBufferSize() {
-            return bufferSize;
-        }
-
-        public boolean isMinificationEnabled() {
-            return minification;
-        }
-
-        public boolean isGzipEnabled() {
-            return gzip;
-        }
-
-        public boolean isOnTheFlyGzipEnabled() {
-            return gzipOnTheFly;
-        }
-
-        public CacheConfig cacheConfig() {
-            return cache;
-        }
-
-        @Config("cache")
-        public static class CacheConfig {
-            private static final int DEFAULT_CACHE_MAX_SIZE = 8192;
-            private static final int DEFAULT_CACHE_CONCURRENCY = 32;
-
-            private int maxSize = DEFAULT_CACHE_MAX_SIZE;
-            private int initialSize = maxSize / 4;
-            private int concurrencyLevel = DEFAULT_CACHE_CONCURRENCY;
-
-            public int getInitialSize() {
-                return initialSize;
-            }
-
-            public int getMaxSize() {
-                return maxSize;
-            }
-
-            public int getConcurrencyLevel() {
-                return concurrencyLevel;
-            }
-        }
-    }
-
     @Config("server")
     public static class ServerConfig {
         private static final String DEFAULT_HOST = "0.0.0.0";
@@ -149,7 +86,7 @@ public class WebConfig {
         private static final boolean DEFAULT_HTTP2_ACTIVATION = true;
         private static final boolean DEFAULT_HTTPS_ACTIVATION = false;
         private static final String DEFAULT_WELCOME_FILE = "index.html";
-
+        private StaticResourcesConfig staticResources = new StaticResourcesConfig();
         private SessionsConfig sessions = new SessionsConfig();
         private String host = DEFAULT_HOST;
         @SingleValue
@@ -168,6 +105,10 @@ public class WebConfig {
 
         public SessionsConfig sessions() {
             return sessions;
+        }
+
+        public StaticResourcesConfig staticResources() {
+            return staticResources;
         }
 
         public String getHost() {
@@ -248,6 +189,50 @@ public class WebConfig {
 
             public SessionsConfig setTimeout(int timeout) {
                 this.timeout = timeout;
+                return this;
+            }
+        }
+
+        @Config("static")
+        public static class StaticResourcesConfig {
+            private boolean enabled = true;
+            private boolean serveMinified = true;
+            private boolean serveCompressed = true;
+            private boolean compressAll = true;
+
+            public boolean isEnabled() {
+                return enabled;
+            }
+
+            public StaticResourcesConfig setEnabled(boolean enabled) {
+                this.enabled = enabled;
+                return this;
+            }
+
+            public boolean isServeMinified() {
+                return serveMinified;
+            }
+
+            public StaticResourcesConfig setServeMinified(boolean serveMinified) {
+                this.serveMinified = serveMinified;
+                return this;
+            }
+
+            public boolean isServeCompressed() {
+                return serveCompressed;
+            }
+
+            public StaticResourcesConfig setServeCompressed(boolean serveCompressed) {
+                this.serveCompressed = serveCompressed;
+                return this;
+            }
+
+            public boolean isCompressAll() {
+                return compressAll;
+            }
+
+            public StaticResourcesConfig setCompressAll(boolean compressAll) {
+                this.compressAll = compressAll;
                 return this;
             }
         }

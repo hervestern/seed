@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.web;
 
 import java.net.URL;
@@ -54,6 +55,15 @@ public class ResourceInfo {
         result = 31 * result + (gzipped ? 1 : 0);
         result = 31 * result + contentType.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "ResourceInfo{" +
+                "url='" + url + '\'' +
+                ", gzipped=" + gzipped +
+                ", contentType='" + contentType + '\'' +
+                '}';
     }
 
     /**
