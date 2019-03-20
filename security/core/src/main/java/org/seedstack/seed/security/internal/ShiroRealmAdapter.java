@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
 import java.util.ArrayList;
@@ -157,7 +158,7 @@ class ShiroRealmAdapter extends AuthorizingRealm {
         this.realm = realm;
     }
 
-    private org.seedstack.seed.security.AuthenticationToken convertToken(AuthenticationToken token) {
+    private static org.seedstack.seed.security.AuthenticationToken convertToken(AuthenticationToken token) {
         if (token instanceof org.seedstack.seed.security.AuthenticationToken) {
             return (org.seedstack.seed.security.AuthenticationToken) token;
         } else if (token instanceof UsernamePasswordToken) {

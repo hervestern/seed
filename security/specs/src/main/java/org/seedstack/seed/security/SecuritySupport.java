@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security;
 
 import java.io.Serializable;
@@ -231,6 +232,8 @@ public interface SecuritySupport {
      */
     Set<SimpleScope> getSimpleScopes();
 
+    void login(AuthenticationToken credentials);
+
     /**
      * Logs out the connected user and invalidates and/or removes any associated entities, such as a Session and
      * authorization data. After this method
@@ -269,7 +272,7 @@ public interface SecuritySupport {
      * Returns the host name or IP string of the host of the connected user, or {@code null} if the host is unknown.
      *
      * @return the host name or IP string of the host that originated this session, or {@code null} if the host
-     * address is unknown.
+     *         address is unknown.
      */
     String getHost();
 }

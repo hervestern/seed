@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.seed.security.internal;
 
 import java.io.Serializable;
@@ -22,6 +23,7 @@ import org.apache.shiro.realm.Realm;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
+import org.seedstack.seed.security.AuthenticationToken;
 import org.seedstack.seed.security.AuthorizationException;
 import org.seedstack.seed.security.Role;
 import org.seedstack.seed.security.Scope;
@@ -29,14 +31,16 @@ import org.seedstack.seed.security.SecuritySupport;
 import org.seedstack.seed.security.SimpleScope;
 import org.seedstack.seed.security.internal.authorization.ScopePermission;
 import org.seedstack.seed.security.internal.authorization.SeedAuthorizationInfo;
+import org.seedstack.seed.security.internal.realms.AuthenticationTokenWrapper;
 import org.seedstack.seed.security.principals.PrincipalProvider;
 import org.seedstack.seed.security.principals.Principals;
 import org.seedstack.seed.security.principals.SimplePrincipalProvider;
 
 class ShiroSecuritySupport implements SecuritySupport {
-
     @Inject
     private Set<Realm> realms;
+    @Inject
+    private org.apache.shiro.mgt.SecurityManager securityManager;
 
     @Override
     public PrincipalProvider<?> getIdentityPrincipal() {
@@ -204,6 +208,11 @@ class ShiroSecuritySupport implements SecuritySupport {
         } catch (org.apache.shiro.authz.AuthorizationException e) {
             throw new AuthorizationException("Subject doesn't have roles " + Arrays.toString(roleIdentifiers), e);
         }
+    }
+
+    @Override
+    public void login(AuthenticationToken token) {
+        SecurityUtils.getSubject().login(new AuthenticationTokenWrapper(token));
     }
 
     @Override
