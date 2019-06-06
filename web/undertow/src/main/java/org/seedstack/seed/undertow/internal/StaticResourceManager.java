@@ -13,6 +13,7 @@ public class StaticResourceManager implements ResourceManager {
     private static final ClassLoader classLoader =
             ClassLoaders.findMostCompleteClassLoader(StaticResourceManager.class);
     private final ResourceManager resourceManager;
+    private final String[] extensionsToTry;
 
     public StaticResourceManager(WebConfig.ServerConfig.StaticResourcesConfig staticResourcesConfig) {
         if (staticResourcesConfig.isEnabled()) {
@@ -20,11 +21,43 @@ public class StaticResourceManager implements ResourceManager {
         } else {
             resourceManager = ResourceManager.EMPTY_RESOURCE_MANAGER;
         }
+        computeExtensionsToTry()
+        this.staticResourcesConfig = staticResourcesConfig;
     }
 
     @Override
     public Resource getResource(String path) throws IOException {
+        Resource found = null;
+        boolean isMinified = false;
+        boolean isCompressed = false;
+        if (staticResourcesConfig.isServeMinified()) {
+            if (staticResourcesConfig.isServeCompressed()) {
+                found = resourceManager.getResource(path + ".min.gz");
+                isMinified = isCompressed = true;
+            }
+            if (found == null) {
+                found = resourceManager.getResource(path + ".min");
+                isMinified = true;
+            }
+        } else {
+
+        }
         return resourceManager.getResource(path);
+    }
+
+    public Resource getCompressedResource(String path) throws IOException {
+
+    }
+
+    public Resource getCompressedResource(String path) throws IOException {
+        Resource found = null;
+        if (staticResourcesConfig.isServeCompressed()) {
+            found = resourceManager.getResource(path + ".gz");
+        }
+        if (found == null) {
+            found = resourceManager.getResource(path);
+        }
+        return found;
     }
 
     @Override
