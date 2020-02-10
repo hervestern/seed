@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.seedstack.poms</groupId>
         <artifactId>parent-internal</artifactId>
-        <version>3.4.8</version>
+        <version>3.4.9-SNAPSHOT</version>
     </parent>
 
     <groupId>org.seedstack.seed</groupId>
@@ -32,7 +32,7 @@
         <guava.version>27.0.1-jre</guava.version>
         <typetools.version>0.5.0</typetools.version>
         <shiro.version>1.4.0</shiro.version>
-        <undertow.version>2.0.17.Final</undertow.version>
+        <undertow.version>2.0.29.Final</undertow.version>
         <jersey2.version>2.27</jersey2.version>
         <hibernate-validator.version>5.4.3.Final</hibernate-validator.version>
         <aopalliance.version>1.0</aopalliance.version>
